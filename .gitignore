@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-desktop/
+dist-desktop-build/
+.idea/
+*.apk
+.env
+build_error.log
+desktop.ini
+.DS_Store

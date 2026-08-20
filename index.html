@@ -1,0 +1,2837 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>AsistenciaApp — MEDUCA</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="src/style.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body data-active-screen="screen-role">
+  <!-- BLOBS FOR FUTURISTIC AESTHETIC -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <!-- GLOBAL HEADER (AsistenciaApp) -->
+  <header class="global-header" style="display: none;">
+    <div class="header-logo">
+      <div class="title">Asistencia<span>App</span></div>
+      <div id="greeting-wrapper" class="greeting-wrapper">
+        <div class="greeting-content">
+          <span id="greeting-text"></span>
+          <span id="teacher-name"></span>
+        </div>
+      </div>
+    </div>
+    <div class="header-center">
+      <h1 id="current-class-display" style="font-weight: 700; color: var(--text); font-size: 1rem; margin: 0;"></h1>
+    </div>
+    <div class="header-controls" style="display: flex; align-items: center; gap: 10px;">
+      <div id="header-group-badge-container" class="header-group-badge-container" style="display: flex; align-items: center;">
+        <span id="header-group-badge" class="header-group-badge"></span>
+      </div>
+      <!-- Icono de Menú (3 rallitas) para Interior (Ajustes Rápidos) -->
+      <div style="position: relative;">
+        <button id="header-menu-icon" class="gear-btn" onclick="window.toggleQuickSettings(event)"
+          style="background: transparent; border: none; color: var(--text); cursor: pointer; padding: 8px; border-radius: 50%; display: none; align-items: center; justify-content: center; transition: all 0.2s;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+            <circle cx="12" cy="5" r="1.5" fill="currentColor"></circle>
+            <circle cx="12" cy="19" r="1.5" fill="currentColor"></circle>
+          </svg>
+        </button>
+
+        <!-- Quick Settings Dropdown -->
+        <div id="quick-settings-dropdown" class="glass"
+          style="display: none; position: absolute; top: calc(100% + 10px); right: 0; min-width: 280px; border-radius: 16px; padding: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); z-index: 10000; flex-direction: column; gap: 16px;">
+
+          <!-- Teacher Profile Info -->
+          <div
+            style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+            <div
+              style="width: 42px; height: 42px; border-radius: 50%; background: var(--brand-celeste); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,180,216,0.3);"
+              id="qs-avatar">D</div>
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+              <div style="font-weight: 800; color: var(--text); font-size: 0.95rem; line-height: 1.2;"
+                id="qs-teacher-name">Docente</div>
+              <div style="font-size: 0.75rem; color: var(--muted); font-weight: 600; line-height: 1.2; margin-top: 2px;"
+                id="qs-teacher-subject">Perfil Educativo</div>
+            </div>
+          </div>
+
+          <!-- Quick Options -->
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span
+                style="font-size: 0.85rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px;" data-i18n="theme_title">Tema
+                Visual</span>
+              <div class="theme-options-flex"
+                style="display: flex; gap: 4px; background: rgba(0,0,0,0.05); padding: 4px; border-radius: 10px;">
+                <button onclick="window.setAppTheme('light')" class="theme-btn-v2" id="qs-theme-light"
+                  style="padding: 6px; border-radius: 8px; border: none; background: transparent; cursor: pointer; color: var(--text); transition: all 0.2s;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                  </svg>
+                </button>
+                <button onclick="window.setAppTheme('dark')" class="theme-btn-v2" id="qs-theme-dark"
+                  style="padding: 6px; border-radius: 8px; border: none; background: transparent; cursor: pointer; color: var(--text); transition: all 0.2s;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  </svg>
+                </button>
+                <button onclick="window.setAppTheme('system')" class="theme-btn-v2" id="qs-theme-system"
+                  style="padding: 6px; border-radius: 8px; border: none; background: transparent; cursor: pointer; color: var(--text); transition: all 0.2s;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span
+                style="font-size: 0.85rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px;" data-i18n="lang_selection">Idioma</span>
+              <select id="qs-language-select" onchange="window.setLanguage(this.value)"
+                style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.8rem; font-weight: 600; cursor: pointer; outline: none;">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="qs-manage-days-btn" onclick="window.toggleQuickSettings(); if (window.openManageDaysModal) window.openManageDaysModal();"
+            style="width: 100%; padding: 12px; border-radius: 10px; background: var(--accent-teal); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; transition: opacity 0.2s; margin-top: 4px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span data-i18n="btn_manage_days">Gestionar Días</span>
+          </button>
+
+          <button onclick="window.toggleQuickSettings(); goTo('screen-settings');"
+            style="width: 100%; padding: 12px; border-radius: 10px; background: var(--active-bg); color: white; border: none; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; transition: opacity 0.2s; margin-top: 4px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path
+                d="M12.22 2h-.44a2 2 0 0 0-2 2 2 2 0 0 1-2 2 2 2 0 0 0-2 2 2 2 0 0 1-2 2 2 2 0 0 0-2 2v.44a2 2 0 0 0 2 2 2 2 0 0 1 2 2 2 2 0 0 0 2 2 2 2 0 0 1 2 2 2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 0 2-2v-.44a2 2 0 0 0-2-2 2 2 0 0 1-2-2 2 2 0 0 0-2-2 2 2 0 0 1-2-2 2 2 0 0 0-2-2z">
+              </path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span data-i18n="btn_more_settings">Más Ajustes</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Icono de Tuerquita para Bienvenida -->
+      <button id="header-gear-icon" class="gear-btn" onclick="window.openBasicSettings(event)"
+        style="background: transparent; border: none; color: var(--text); cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M12.22 2h-.44a2 2 0 0 0-2 2 2 2 0 0 1-2 2 2 2 0 0 0-2 2 2 2 0 0 1-2 2 2 2 0 0 0-2 2v.44a2 2 0 0 0 2 2 2 2 0 0 1 2 2 2 2 0 0 0 2 2 2 2 0 0 1 2 2 2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 0 2-2v-.44a2 2 0 0 0-2-2 2 2 0 0 1-2-2 2 2 0 0 0-2-2 2 2 0 0 1-2-2 2 2 0 0 0-2-2z">
+          </path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <!-- CALENDAR WIDGET MATCHING IMAGE -->
+      <div class="calendar-widget">
+        <div class="calendar-header">
+          <span class="calendar-nav" id="cal-prev">&lt;</span>
+          <span id="calendar-month-year">Noviembre 2026</span>
+          <span class="calendar-nav" id="cal-next">&gt;</span>
+        </div>
+        <div class="calendar-grid" id="calendar-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- COLLAPSE ARROW BUTTON (MOBILE LANDSCAPE) -->
+      <button id="sidebar-collapse-btn" class="sidebar-arrow-btn sidebar-collapse-arrow" title="Contraer Menú Lateral" aria-label="Contraer Menú">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="nav-group">
+        <a class="nav-link" id="nav-grupos">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="opacity: 0.9;">
+              <rect x="4" y="12" width="4" height="8" rx="1"></rect>
+              <rect x="10" y="4" width="4" height="16" rx="1"></rect>
+              <rect x="16" y="8" width="4" height="12" rx="1"></rect>
+            </svg>
+          </span> <span class="nav-text" data-i18n="sidebar_grupos">Grupos</span>
+        </a>
+
+        <a class="nav-link active" id="nav-asistencia">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </span> <span class="nav-text" data-i18n="sidebar_asistencia">Asistencia</span>
+        </a>
+        <a class="nav-link" id="nav-alumnos">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span> <span class="nav-text" data-i18n="sidebar_alumnos">Alumnos</span>
+        </a>
+        <a class="nav-link" id="nav-tareas">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              <path d="M9 14l2 2 4-4"></path>
+            </svg>
+          </span> <span class="nav-text" data-i18n="sidebar_tareas">Tareas</span>
+        </a>
+        <a class="nav-link" id="nav-mensajes" onclick="setActiveNav(this, 'screen-mensajes')">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </span> <span class="nav-text" style="position: relative;">Mensajes <span id="msg-badge"
+              style="display: none; position: absolute; top: 0; right: -25px; background: #ef4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 0.6rem; font-weight: 800;">1</span></span>
+        </a>
+        <a class="nav-link" id="nav-ajustes" onclick="setActiveNav(this, 'screen-settings')">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg>
+          </span> <span class="nav-text">Ajustes</span>
+        </a>
+
+      </div>
+      <a class="nav-link" id="nav-salir" onclick="goTo('screen-role')" style="margin-top: auto;">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 5 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+        </span> <span class="nav-text">Salir</span>
+      </a>
+    </aside>
+
+    <!-- FLOATING EXPAND ARROW BUTTON (APPEARS ON LEFT EDGE WHEN SIDEBAR IS COLLAPSED) -->
+    <button id="sidebar-expand-btn" class="sidebar-arrow-btn sidebar-expand-floating-btn" title="Mostrar Menú Lateral" aria-label="Mostrar Menú">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+
+    <!-- MAIN -->
+    <main>
+      <style>
+        .gear-btn {
+          z-index: 9999 !important;
+          pointer-events: auto !important;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .gear-btn:hover {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+      </style>
+
+      <!-- SCREEN: ROLE SELECT -->
+      <div class="screen active" id="screen-role">
+        <!-- BOTÓN DE AJUSTES (TUERCA) -->
+        <button id="open-basic-settings-welcome" class="gear-btn btn-icon-premium"
+          style="position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.15); border: none; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text); cursor: pointer; transition: all 0.3s; z-index: 999999; backdrop-filter: blur(12px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); pointer-events: auto !important;"
+          onclick="window.openBasicSettings(event)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+        </button>
+        <div class="welcome-header" style="position: relative; margin-top: 60px;">
+          <h1>Asistencia<span>App</span></h1>
+          <p class="subtitle" data-i18n="welcome_subtitle">Selecciona tu perfil para acceder a las funciones
+            correspondientes del sistema de
+            gestión escolar.</p>
+        </div>
+
+        <div class="role-cards">
+          <div class="role-card docente" id="role-docente">
+            <div class="card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </div>
+            <h3 class="card-title" data-i18n="btn_teacher">Perfil Docente</h3>
+            <p class="card-desc">Gestiona asistencia, grupos y tareas en tiempo real.</p>
+          </div>
+          <div class="role-card acudiente" id="role-acudiente">
+            <div class="card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <h3 class="card-title" data-i18n="btn_guardian">Perfil Acudiente</h3>
+            <p class="card-desc">Consulta el progreso y asistencia de tu acudido.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: DOCENTE DASHBOARD -->
+      <div class="screen" id="screen-docente">
+
+
+
+
+        <div class="table-wrap" style="background: transparent;">
+          <div class="filter-bar">
+            <div class="scope-toggle" id="scope-toggle">
+              <span class="scope-tab active" data-scope="semana" data-i18n="tab_week">Semana</span>
+              <span class="scope-tab" data-scope="mes" data-i18n="tab_month">Mes</span>
+              <span class="scope-tab" data-scope="trimestre" data-i18n="tab_quarter">Trimestre</span>
+            </div>
+
+            <div class="table-month-nav" id="table-month-nav">
+              <button class="month-nav-btn" id="table-month-prev">❮</button>
+              <h3 class="current-month-label" id="table-month-name" style="cursor: pointer;"
+                onclick="window.openCalendarModal()">Marzo 2026</h3>
+              <button class="month-nav-btn" id="table-month-next">❯</button>
+            </div>
+            <div class="filter-search">
+
+              <style>
+                .desktop-lock-btn {
+                  display: flex;
+                  background: var(--bg);
+                  align-items: center;
+                  justify-content: center;
+                  width: 38px;
+                  height: 38px;
+                  padding: 0;
+                  border-radius: 6px;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+                  border: none;
+                  cursor: pointer;
+                  color: var(--brand-celeste);
+                  /* Cambio a celeste solicitado */
+                }
+
+                @media (max-width: 768px) and (orientation: portrait) {
+                  .desktop-lock-wrapper {
+                    display: none !important;
+                  }
+                }
+
+                /* FORCE FIXES FOR LOCK MENU */
+                #lock-menu-dropdown {
+                  width: 135px !important;
+                  left: 50% !important;
+                  transform: translateX(-50%) !important;
+                }
+
+                #lock-menu-dropdown div {
+                  width: 100% !important;
+                  display: flex !important;
+                  justify-content: center !important;
+                  text-align: center !important;
+                  font-size: 0.68rem !important;
+                  padding: 8px 10px !important;
+                  box-sizing: border-box !important;
+                }
+
+                /* FORCE HIDE MOBILE FAB ON WELCOME SCREEN */
+                [data-active-screen="screen-role"] .mobile-lock-fab,
+                [data-active-screen="screen-role"] #mobile-lock-fab {
+                  display: none !important;
+                }
+              </style>
+              <div class="desktop-lock-wrapper" style="position: relative; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px;">
+                <button class="desktop-lock-btn" id="desktop-lock-btn" title="Bloquear Edición"
+                  onclick="window.toggleLockMenu(event)" style="margin: 0;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </button>
+
+                <div id="lock-menu-dropdown" class="lock-menu-dropdown">
+                  <div id="lock-lbl-pencil" onclick="window.handleLockOptionClick('pencil')" data-i18n="lock_pencil">A
+                    Lápiz</div>
+                  <div id="lock-lbl-ink" onclick="window.handleLockOptionClick('ink')" data-i18n="lock_ink">Tinta
+                    permanente</div>
+                </div>
+              </div>
+
+
+              <button class="btn-primary" id="edit-schedule-btn-attendance" title="Editar Horario"
+                onclick="window.openManageDaysModal()"
+                style="background: var(--brand-celeste, #00b4d8); color: white; display: flex !important; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 180, 216, 0.25); border: none; cursor: pointer; margin: 0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- TABLE EXACT REPLICA -->
+          <div class="table-wrap">
+            <table class="matrix-table">
+              <thead id="matrix-head"></thead>
+              <tbody id="student-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: GRUPOS -->
+      <div class="screen" id="screen-grupos" style="padding: 30px;">
+        <div class="dashboard-header" style="margin-bottom: 30px;">
+          <div style="flex: 1; min-width: 250px;">
+            <div class="intro-label">Gestión Docente</div>
+            <div class="dashboard-title">Mis <span>Grupos / Salones</span></div>
+          </div>
+          <div style="flex: 1; display: flex; justify-content: center; gap: 12px; min-width: 300px;">
+            <button class="btn-primary" style="background: var(--accent-teal);" id="open-horario"
+              onclick="window.goTo('screen-horario')" ontouchstart="window.goTo('screen-horario')">
+              <span class="nav-icon" style="margin-right:8px; display:inline-flex; align-items:center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span> Mi Horario
+            </button>
+            <button class="btn-primary" id="open-add-group">
+              <span style="font-size: 1.2rem; margin-right: 8px;">+</span> Crear Grupo
+            </button>
+          </div>
+          <div style="flex: 1; display: flex; justify-content: flex-end; min-width: 100px;"></div>
+        </div>
+
+        <div class="groups-grid" id="groups-grid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+
+
+
+      <!-- SCREEN: TAREAS PENDIENTES -->
+      <!-- SCREEN: ALUMNOS (ISOLATED) -->
+      <div class="screen" id="screen-alumnos" style="display: none; padding: 30px;">
+        <div class="dashboard-header" id="alumnos-dashboard-header" style="margin-bottom: 20px;">
+          <div style="display: flex; flex-direction: column;">
+            <h2 class="dashboard-title">Listado de Alumnos</h2>
+          </div>
+          <input type="text" id="alumnos-module-search-input" class="alumnos-module-search"
+            placeholder="Buscar por nombre, grupo o riesgo...">
+        </div>
+
+        <div class="alumnos-module-container">
+          <div class="alumnos-module-filters" id="alumnos-module-filters"></div>
+          <div class="alumnos-module-grid" id="alumnos-module-grid"></div>
+        </div>
+      </div>
+
+      <!-- SCREEN: TAREAS DOCENTE -->
+      <div class="screen" id="screen-tareas" style="padding: 30px;">
+        <div class="dashboard-header"
+          style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div style="flex: 1;">
+            <div class="intro-label">Tareas y Proyectos</div>
+            <div class="dashboard-title">Actividades <span>Pendientes</span></div>
+          </div>
+
+          <div style="flex: 1; display: flex; justify-content: flex-end;">
+            <button class="btn-back-premium" onclick="window.goBack()"
+              style="padding: 10px 16px; margin: 0; display: inline-flex; align-items: center; justify-content: center; height: fit-content;"
+              data-i18n="btn_back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Volver
+            </button>
+          </div>
+        </div>
+
+        <div class="tareas-action-bar">
+          <button class="btn-tareas-act btn-new-task" id="open-add-task">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Nueva Tarea</span>
+          </button>
+          
+          <button class="btn-tareas-act btn-new-reunion" id="open-add-reunion">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+              <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+            <span>Crear Reunión</span>
+          </button>
+
+          <button class="btn-tareas-act btn-clear-registry" id="clear-tareas-registry">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            <span>Limpiar Registro</span>
+          </button>
+        </div>
+
+        <div class="filter-bar" style="margin-bottom: 25px;">
+          <div class="group-tabs-nav-wrapper">
+            <button class="group-nav-arrow" id="tareas-prev-group" title="Grupo anterior" aria-label="Grupo anterior">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <div class="scope-toggle" id="tareas-group-tabs">
+              <!-- Group tabs will be injected here -->
+            </div>
+            <button class="group-nav-arrow" id="tareas-next-group" title="Grupo siguiente" aria-label="Grupo siguiente">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="tareas-container" style="width: 100%;">
+          <div class="tareas-grid" id="tareas-list" style="width: 100%;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: MENSAJES -->
+      <div class="screen" id="screen-mensajes" style="padding: 20px 30px;">
+        <div class="dashboard-header" style="margin-bottom: 30px;">
+          <div>
+            <div class="intro-label">Bandeja de Entrada</div>
+            <div class="dashboard-title">Mensajes de <span>Acudientes</span></div>
+          </div>
+        </div>
+
+        <div class="messages-container" id="teacher-messages-list"
+          style="display: flex; flex-direction: column; gap: 15px;">
+          <p style="color: var(--muted); padding: 20px;">No hay mensajes nuevos.</p>
+        </div>
+      </div>
+
+      <!-- SCREEN: ACUDIENTE DASHBOARD -->
+      <div class="screen" id="screen-acudiente" style="padding: 15px 30px;">
+        <!-- NEW PREMIUM HEADER (CENTERED & CLEAN MATCHING REFERENCE) -->
+        <div class="dashboard-header-premium" style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; padding: 5px 0;">
+          <!-- Volver Button Absolute top left -->
+          <button class="btn-back-premium" onclick="window.goBack()" style="position: absolute; top: 0; left: 0; height: fit-content; padding: 6px 14px; font-size: 0.85rem; border-radius: 10px; background: transparent; border: none; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 4px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Volver
+          </button>
+          
+          <h2 class="dashboard-title-premium" id="acudiente-student-name" style="margin: 0; margin-top: 2px; font-size: 1.35rem; font-weight: 700; color: var(--text); font-family: 'Inter', sans-serif;">Ariana García</h2>
+          <div style="display: none; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-top: 4px;">Código de Libreta: <span id="acudiente-student-code" style="color: var(--accent-blue); font-weight: 700;">A-12345</span></div>
+          
+          <div class="acudiente-divider-line" style="width: 100%; height: 1px; background: var(--border); margin-top: 15px; margin-bottom: 20px;"></div>
+          
+          <div class="acudiente-stats-bar" style="background: var(--surface); border: none; border-radius: 16px; padding: 14px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin: 0 0 20px 0; width: 100%;">
+            <div class="acudiente-stat-col">
+              <div class="acudiente-stat-icon-wrapper" style="width: 38px; height: 38px; border-radius: 10px; background: transparent;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+              <div class="acudiente-stat-info">
+                <div class="acudiente-stat-label" style="font-size: 0.95rem; font-weight: 700;">Asistencia</div>
+                <div class="acudiente-stat-val" id="acudiente-attendance-details">Faltas 0 &nbsp;Tardan 0 &nbsp;Asist 0</div>
+              </div>
+            </div>
+            
+            <div class="acudiente-stats-divider" style="width: 1.5px; height: 32px; background: var(--border);"></div>
+            
+            <div class="acudiente-stat-col">
+              <div class="acudiente-stat-icon-wrapper" style="width: 38px; height: 38px; border-radius: 10px; background: transparent;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+              </div>
+              <div class="acudiente-stat-info">
+                <div class="acudiente-stat-label" style="font-size: 0.95rem; font-weight: 700;">Tareas entregadas</div>
+                <div class="acudiente-stat-val" id="acudiente-tasks-val">0</div>
+              </div>
+            </div>
+            
+            <div class="acudiente-stats-divider" style="width: 1.5px; height: 32px; background: var(--border);"></div>
+            
+            <div class="acudiente-stat-col" id="acudiente-notif-card">
+              <div class="acudiente-stat-icon-wrapper" style="width: 38px; height: 38px; border-radius: 10px; background: transparent;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" id="acudiente-notif-svg">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+              <div class="acudiente-stat-info">
+                <div class="acudiente-stat-label" style="font-size: 0.95rem; font-weight: 700;">Notificaciones</div>
+                <div class="acudiente-stat-val" id="acudiente-notif-count">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN GRID: CHART & ACTIONS -->
+        <div class="premium-grid" style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; align-items: stretch;">
+          <!-- Chart Panel -->
+          <div class="panel chart-panel-premium" style="flex: 1.6; min-width: 280px; height: 180px; max-height: 180px; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); border-radius: 20px; padding: 12px 18px; box-sizing: border-box;">
+            <div class="panel-header-premium" style="margin-bottom: 4px; text-align: center;">
+              <span class="panel-title" id="parent-chart-label" style="font-size: 0.95rem; font-weight: 700; color: var(--text);">Tendencia de mayo</span>
+            </div>
+            <div style="flex: 1; height: 120px; min-height: 100px; max-height: 125px; position: relative;">
+              <canvas id="attendanceChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Tasks/Note Panel (Logic container) -->
+          <div class="panel chart-panel-premium" id="acudiente-tasks-panel" style="flex: 1; min-width: 240px; height: 180px; max-height: 180px; display: flex; flex-direction: column; justify-content: center; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); border-radius: 20px; padding: 12px 18px; box-sizing: border-box; overflow: hidden;">
+            <div id="acudiente-tasks-content" style="display: none;"></div>
+
+            <div id="acudiente-note-content" style="display: flex; flex-direction: column; height: 100%; justify-content: center; align-items: center; text-align: center;">
+              <!-- This will be populated dynamically -->
+              <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--bg-main); border: 1px dashed var(--border); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; color: var(--text-muted);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.65;">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <div style="font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 3px;">Sin mensajes nuevos</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); max-width: 220px; line-height: 1.35; opacity: 0.85;">
+                No tienes avisos, citaciones ni reuniones pendientes en este momento.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CITACIONES Y REUNIONES SECTION -->
+        <div class="citaciones-section-parent" style="margin-bottom: 30px;">
+          <div id="parent-citaciones-container" class="parent-citaciones-container">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- ATTENDANCE TABLE SECTION -->
+        <div class="table-wrap" style="padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+          <div class="table-head"
+            style="margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+            <div>
+              <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700;">Reporte Detallado</h3>
+              <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Historial de asistencia por periodos</p>
+            </div>
+            <div class="table-head-controls" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+              <div class="view-selector"
+                style="margin: 0; background: rgba(0,0,0,0.03); padding: 4px; border-radius: 12px;">
+                <button class="view-btn active" onclick="window.setStudentView('semana', this)"
+                  style="border: none;">Semana</button>
+                <button class="view-btn" onclick="window.setStudentView('mes', this)" style="border: none;">Mes</button>
+                <button class="view-btn" onclick="window.setStudentView('trimestre', this)"
+                  style="border: none;">Trimestre</button>
+              </div>
+              <button class="btn-primary teal" id="contact-docente" onclick="window.openContactDocente()"
+                style="padding: 10px 20px; border-radius: 12px; font-weight: 700;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="margin-right: 8px; vertical-align: middle;">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Contactar Docente
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap" style="background: transparent; padding: 0; box-shadow: none; overflow-x: auto;">
+            <table class="matrix-table student-view">
+              <thead id="student-matrix-head"></thead>
+              <tbody id="student-matrix-body"></tbody>
+            </table>
+          </div>
+
+          <div class="parent-additional-info"
+            style="margin-top: 30px; display: flex; flex-direction: column; gap: 25px;">
+            <div class="tasks-section-parent">
+              <div id="parent-tasks-container" class="parent-tasks-container">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="margin-top: 50px; padding-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <button class="btn-premium-ghost" id="back-to-role"
+              style="width: 100%; max-width: 250px; flex: 1 1 200px; border-radius: 12px;">← Cambiar Perfil</button>
+            <button class="btn-premium-ghost" id="btn-config-perfiles" onclick="window.openConfigPerfilesModal()"
+              style="width: 100%; max-width: 250px; flex: 1 1 200px; border-color: var(--accent-blue); color: var(--accent-blue); border-radius: 12px;">
+              Configurar Perfiles
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: SETTINGS -->
+      <div class="screen" id="screen-settings" style="padding: 15px;">
+        <div class="settings-ordered-container">
+          <!-- Header -->
+          <div class="settings-screen-header">
+            <div class="settings-header-main" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px;">
+              <div>
+                <h2 style="margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px;">Configuración General</h2>
+                <p style="margin: 3px 0 0 0; font-size: 0.85rem; color: var(--muted); font-weight: 500;">Ajustes organizados de perfil, notificaciones, interfaz y datos</p>
+              </div>
+
+              <button class="btn-back-premium" id="back-settings" onclick="window.goBack()" style="margin: 0; padding: 10px 18px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Volver</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- GROUP 1: PERFIL DEL DOCENTE -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <h3 class="settings-card-header-title">Perfil del Docente</h3>
+            </div>
+
+            <div class="settings-list-rows">
+              <!-- Item: Foto y Nombre -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="avatar-upload-wrapper" style="position: relative;">
+                    <div class="avatar-upload"
+                      style="width: 64px; height: 64px; border-radius: 50%; background: var(--bg); border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden;"
+                      id="profile-avatar-display" onclick="document.getElementById('teacher-photo-input').click()">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <input type="file" id="teacher-photo-input" accept="image/*" style="display: none;" onchange="window.handleTeacherPhoto(event)">
+                    <div style="position: absolute; bottom: -2px; right: -2px; background: var(--accent-blue); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--surface);">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                  </div>
+                  <div class="settings-item-labels" style="flex: 1;">
+                    <span class="settings-item-title">Nombre Completo</span>
+                    <span class="settings-item-desc">Tu nombre visible en los reportes y encabezados</span>
+                  </div>
+                </div>
+                <div class="settings-item-right" style="flex: 1; max-width: 320px;">
+                  <input type="text" id="teacher-name-input" class="input-field" placeholder="Tu nombre" style="margin-bottom: 0; width: 100%;">
+                </div>
+              </div>
+
+              <!-- Item: Género y Rol (Dual) -->
+              <div class="settings-list-row">
+                <div class="settings-dual-fields">
+                  <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 6px;">Género</label>
+                    <div class="custom-select" id="gender-select-wrapper">
+                      <div class="select-trigger" id="gender-trigger">
+                        <span class="trigger-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                        <span class="trigger-text" id="gender-text">Masculino</span>
+                        <svg class="arrow-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6" /></svg>
+                      </div>
+                      <div class="select-options" id="gender-options">
+                        <div class="select-option" data-value="masculino">Masculino</div>
+                        <div class="select-option" data-value="femenino">Femenino</div>
+                      </div>
+                      <input type="hidden" id="teacher-gender-input" value="masculino">
+                    </div>
+                  </div>
+                  <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 6px;">Rol</label>
+                    <div class="custom-select" id="role-select-wrapper">
+                      <div class="select-trigger" id="role-trigger">
+                        <span class="trigger-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg></span>
+                        <span class="trigger-text" id="role-text">Profesor</span>
+                        <svg class="arrow-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6" /></svg>
+                      </div>
+                      <div class="select-options" id="role-options">
+                        <div class="select-option" data-value="profesor">Profesor / Profesora</div>
+                        <div class="select-option" data-value="maestro">Maestro / Maestra</div>
+                      </div>
+                      <input type="hidden" id="teacher-role-input" value="profesor">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Item: Descripción -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="3" y2="18"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Descripción / Cargo</span>
+                    <span class="settings-item-desc">Información complementaria de tu especialidad</span>
+                  </div>
+                </div>
+                <div class="settings-item-right" style="flex: 1; max-width: 320px;">
+                  <textarea id="teacher-bio-input" class="input-field" placeholder="Ej: Docente de Matemáticas" style="margin-bottom: 0; min-height: 50px; resize: none; width: 100%; font-size: 0.88rem;"></textarea>
+                </div>
+              </div>
+
+              <!-- Item: Cátedra & Teléfono (Dual) -->
+              <div class="settings-list-row">
+                <div class="settings-dual-fields">
+                  <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 6px;">Cátedra / Materia</label>
+                    <div class="custom-select" id="subject-select-wrapper">
+                      <div class="select-trigger" id="subject-trigger">
+                        <span class="trigger-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg></span>
+                        <span class="trigger-text" id="subject-text">Maestro de Primaria</span>
+                        <svg class="arrow-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6" /></svg>
+                      </div>
+                      <div class="select-options" id="subject-options" style="max-height: 200px; overflow-y: auto;">
+                        <div class="select-option" data-value="Maestro de Primaria">Maestro de Primaria</div>
+                        <div class="select-option" data-value="Español">Español</div>
+                        <div class="select-option" data-value="Matemáticas">Matemáticas</div>
+                        <div class="select-option" data-value="Inglés (English)">Inglés (English)</div>
+                        <div class="select-option" data-value="Ciencias Naturales">Ciencias Naturales</div>
+                        <div class="select-option" data-value="Ciencias Sociales">Ciencias Sociales</div>
+                        <div class="select-option" data-value="Geografía">Geografía</div>
+                        <div class="select-option" data-value="Historia">Historia</div>
+                        <div class="select-option" data-value="Cívica">Cívica</div>
+                        <div class="select-option" data-value="Física">Física</div>
+                        <div class="select-option" data-value="Química">Química</div>
+                        <div class="select-option" data-value="Biología">Biología</div>
+                        <div class="select-option" data-value="Expresiones Artísticas">Expresiones Artísticas</div>
+                        <div class="select-option" data-value="Educación Física">Educación Física</div>
+                        <div class="select-option" data-value="Tecnología / Informática">Tecnología / Informática</div>
+                        <div class="select-option" data-value="Contabilidad">Contabilidad</div>
+                        <div class="select-option" data-value="Comercio">Comercio</div>
+                        <div class="select-option" data-value="Orientación">Orientación</div>
+                      </div>
+                      <input type="hidden" id="teacher-subject-input" value="Maestro de Primaria">
+                    </div>
+                  </div>
+                  <div>
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 6px;">Teléfono Contacto</label>
+                    <input type="tel" id="teacher-phone-input" class="input-field" placeholder="Ej: +507 6000-0000" style="margin-bottom: 0;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Save Profile Button -->
+              <div class="settings-list-row" style="justify-content: flex-end; padding-top: 16px;">
+                <button class="btn-primary" id="save-profile-btn" onclick="window.saveTeacherProfile(event)" ontouchstart="window.saveTeacherProfile(event)" style="padding: 12px 24px;">Guardar Cambios de Perfil</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 2: NOTIFICACIONES Y RECORDATORIOS -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <h3 class="settings-card-header-title">Notificaciones y Alertas</h3>
+            </div>
+
+            <div class="settings-list-rows">
+              <!-- Item: Global Toggle -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Activar Notificaciones Globales</span>
+                    <span class="settings-item-desc">Alertas automáticas de clases y asistencias en tu dispositivo</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <label class="alarm-switch">
+                    <input type="checkbox" id="main-notif-global-toggle" onchange="window.saveNotificationSettingsFromMainScreen()">
+                    <span class="alarm-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Item: Anticipación -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Anticipación de Alerta</span>
+                    <span class="settings-item-desc">Minutos antes de iniciar la clase</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <select id="main-notif-advance-select" class="input-field" onchange="window.saveNotificationSettingsFromMainScreen()" style="margin-bottom:0; padding:8px 14px;">
+                    <option value="5">5 min antes</option>
+                    <option value="10" selected>10 min antes</option>
+                    <option value="15">15 min antes</option>
+                    <option value="30">30 min antes</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Item: Recordatorio previo -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Recordatorio Previo de Clase</span>
+                    <span class="settings-item-desc">Aviso preventivo antes de cada periodo</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <label class="alarm-switch">
+                    <input type="checkbox" id="main-notif-type-advance" onchange="window.saveNotificationSettingsFromMainScreen()">
+                    <span class="alarm-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Item: Inicio de clase -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Aviso de Inicio de Clase (Deep Link)</span>
+                    <span class="settings-item-desc">Notificación directa al sonar el timbre para abrir la lista</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <label class="alarm-switch">
+                    <input type="checkbox" id="main-notif-type-start" onchange="window.saveNotificationSettingsFromMainScreen()">
+                    <span class="alarm-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Item: Asistencia pendiente -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Recordatorio de Asistencia Pendiente</span>
+                    <span class="settings-item-desc">Aviso si termina el periodo sin tomar asistencia</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <label class="alarm-switch">
+                    <input type="checkbox" id="main-notif-type-pending" onchange="window.saveNotificationSettingsFromMainScreen()">
+                    <span class="alarm-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Item: Resumen diario -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Resumen Diario de Jornada</span>
+                    <span class="settings-item-desc">Informe al finalizar el turno (Matutino 12:00 PM | Vespertino 5:31 PM)</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <label class="alarm-switch">
+                    <input type="checkbox" id="main-notif-type-summary" onchange="window.saveNotificationSettingsFromMainScreen()">
+                    <span class="alarm-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Item: Tono de Sonido -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Tono de Alarma</span>
+                    <span class="settings-item-desc">Sonido de alerta escolar</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <select id="main-alarm-sound-select" class="input-field" onchange="window.saveNotificationSettingsFromMainScreen()" style="margin-bottom:0; padding:8px 12px;">
+                    <option value="campana">Campana Educativa</option>
+                    <option value="alarma">Alarma Escolar</option>
+                    <option value="timbre">Timbre de Cambio</option>
+                    <option value="digital">Tono Digital</option>
+                    <option value="melodia">Melodía Corta</option>
+                  </select>
+                  <button type="button" onclick="window.playAlarmSound(document.getElementById('main-alarm-sound-select').value)" style="padding:7px 14px; border-radius:8px; border:none; background:var(--accent-blue); color:white; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;" title="Probar sonido">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Probar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 3: PREFERENCIAS INTERFAZ -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <h3 class="settings-card-header-title">Preferencias de Interfaz</h3>
+            </div>
+
+            <div class="settings-list-rows">
+              <!-- Item: Tema Visual -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Tema Visual</span>
+                    <span class="settings-item-desc">Alterna entre modo claro u oscuro</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <div id="theme-icon-wrapper" class="theme-icon-wrapper" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--text);">
+                    <svg id="theme-icon-sun" class="theme-icon-svg" style="display: none;" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                    <svg id="theme-icon-moon" class="theme-icon-svg" style="display: block;" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  </div>
+                  <button class="theme-toggle" id="theme-toggle-btn" title="Cambiar tema"></button>
+                </div>
+              </div>
+
+              <!-- Item: Formato de Hora -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Formato de Hora</span>
+                    <span class="settings-item-desc">Visualización de horas en la matriz y horarios</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <div class="time-toggle-group">
+                    <button id="time-format-12h" class="time-toggle-item" onclick="window.setTimeFormat('12h')">12h</button>
+                    <button id="time-format-24h" class="time-toggle-item" onclick="window.setTimeFormat('24h')">24h</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Item: Idioma -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Idioma</span>
+                    <span class="settings-item-desc">Idioma de la aplicación</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <select class="input-field" id="language-select" onchange="window.setLanguage(this.value)" style="margin-bottom: 0; padding: 8px 14px;">
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP: CUENTA DE GOOGLE -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon" style="background: rgba(234, 67, 53, 0.12); color: #ea4335;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                </svg>
+              </div>
+              <h3 class="settings-card-header-title">Cuenta de Google y Nube</h3>
+            </div>
+
+            <div class="settings-list-rows">
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon" style="background: rgba(66, 133, 244, 0.1); color: #4285f4;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Cuenta de Google</span>
+                    <span class="settings-item-desc google-sync-subtitle">Sincroniza tus datos y notas en Google Drive</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <button type="button" class="btn-google-connect" onclick="window.toggleGoogleAccount()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+                    </svg>
+                    <span class="google-btn-text">Conectar Google</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 4: SEGURIDAD -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <h3 class="settings-card-header-title">Ajustes de Seguridad</h3>
+            </div>
+
+            <div class="settings-list-rows">
+              <!-- Item: Contraseña Maestra -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778z"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Contraseña Maestra</span>
+                    <span class="settings-item-desc">Protege la edición de historial de asistencia</span>
+                  </div>
+                </div>
+                <div class="settings-item-right" style="flex: 1; max-width: 320px;">
+                  <div style="display: flex; gap: 8px; width: 100%;">
+                    <input type="password" id="master-password-input" class="input-field" placeholder="••••••••" style="margin-bottom: 0; font-family: monospace; flex: 1;">
+                    <button class="btn-primary" onclick="window.saveMasterPassword()" style="padding: 9px 16px; border-radius: 10px;">Guardar</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Password status & display -->
+              <div class="settings-list-row" style="padding-top: 0;">
+                <div style="width: 100%;">
+                  <small id="master-password-status" style="font-size: 0.75rem; color: #10b981; display: none;">Contraseña configurada exitosamente.</small>
+
+                  <div id="saved-password-wrapper" style="margin-top: 8px; display: none; align-items: center; justify-content: space-between; background: var(--bg); padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                      <span style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Contraseña Actual</span>
+                      <span id="saved-password-display" style="font-family: monospace; font-size: 1rem; -webkit-text-security: disc; text-security: disc; color: var(--text);"></span>
+                    </div>
+                    <button id="toggle-saved-pw-btn" onclick="window.toggleSavedPasswordVisibility()" style="background: rgba(0,0,0,0.05); border: none; color: var(--muted); cursor: pointer; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 5: COPIA DE SEGURIDAD Y DATOS -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <h3 class="settings-card-header-title">Copia de Seguridad y Datos</h3>
+            </div>
+
+            <div class="settings-list-rows">
+              <!-- Item: Exportar -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Exportar Copia de Seguridad</span>
+                    <span class="settings-item-desc">Descarga un respaldo completo (.JSON) de tus listas y notas</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <button class="btn-primary" onclick="window.exportAllData()" style="padding: 9px 18px; border-radius: 10px; font-weight: 700;">Exportar .JSON</button>
+                </div>
+              </div>
+
+              <!-- Item: Importar -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Importar Información</span>
+                    <span class="settings-item-desc">Restaura datos desde un archivo de respaldo (.JSON)</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <button class="btn-secondary" onclick="document.getElementById('import-backup-file').click()" style="padding: 9px 18px; border-radius: 10px; font-weight: 700; border: 1px solid var(--border);">Importar .JSON</button>
+                  <input type="file" id="import-backup-file" accept=".json" style="display: none;" onchange="window.importAllData(event)">
+                </div>
+              </div>
+
+              <!-- Item: Descargar datos de seguridad -->
+              <div class="settings-list-row">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Descargar Datos de Auditoría</span>
+                    <span class="settings-item-desc">Claves de acceso y registros de seguridad</span>
+                  </div>
+                </div>
+                <div class="settings-item-right">
+                  <button class="btn-secondary" onclick="window.downloadSecurityData()" style="padding: 9px 18px; border-radius: 10px; font-weight: 700; border: 1px solid var(--border);">Descargar Reporte</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP 6: INFORMACIÓN -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </div>
+              <h3 class="settings-card-header-title">Acerca de la Aplicación</h3>
+            </div>
+            <div class="settings-list-rows" style="padding: 16px 20px;">
+              <p style="margin: 0 0 6px 0; font-size: 0.88rem; color: var(--text);"><strong>Versión:</strong> 1.0.0 Prototipo Oficial</p>
+              <p style="margin: 0 0 6px 0; font-size: 0.88rem; color: var(--text);"><strong>Institución:</strong> Ministerio de Educación (MEDUCA)</p>
+              <p style="margin: 6px 0 0 0; font-size: 0.82rem; color: var(--muted); line-height: 1.5;">Sistema integral de verificación de asistencia y seguimiento escolar en Panamá.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN: HORARIO -->
+      <div class="screen" id="screen-horario" style="padding: 12px; width: 100%; max-width: 100%;">
+        <div class="dashboard-header"
+          style="margin-bottom: 25px; flex-direction: column; align-items: stretch; gap: 15px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="dashboard-title">Mi <span>Horario Académico</span></div>
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="shift-dropdown" id="shift-dropdown" style="flex: 1;">
+              <div class="shift-selected" id="shift-selected" style="height: 42px;">
+                <span id="shift-current-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+                <span id="shift-current-text">Matutino</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+              <div class="shift-options" id="shift-options">
+                <div class="shift-option" data-value="matutino"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></span> Matutino</div>
+                <div class="shift-option" data-value="vespertino"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="9" x2="12" y2="2"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/><line x1="23" y1="22" x2="1" y2="22"/><polyline points="16 5 12 9 8 5"/></svg></span> Vespertino</div>
+                <div class="shift-option" data-value="nocturno"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span> Nocturno</div>
+                <div class="shift-option" data-value="custom"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg></span> Personalizado</div>
+              </div>
+            </div>
+            <button class="btn-back" id="back-from-horario" onclick="window.goBack()" ontouchstart="window.goBack()"
+              style="height: 42px; padding: 0 20px; font-size: 0.9rem; flex: 0.4; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--surface); border: 1.5px solid #e2e8f0; color: #64748b;"
+              data-i18n="btn_back">Volver</button>
+          </div>
+
+          <button class="btn-primary" id="open-add-schedule"
+            style="height: 46px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 12px var(--glow-blue);">
+            <span style="font-size: 1.4rem; font-weight: 700;">+</span> Agregar Clase
+          </button>
+        </div>
+
+        <div class="schedule-container">
+          <!-- Schedule Grid -->
+          <div class="schedule-grid" id="schedule-grid">
+            <!-- Rendered via JS to support dynamic columns/rows -->
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        AsistenciaApp &nbsp;·&nbsp; Desarrollado para <span>MEDUCA</span> &nbsp;·&nbsp; v0.1 prototipo
+      </footer>
+    </main>
+  </div>
+
+  <!-- MODAL: CÓDIGO ACUDIENTE -->
+  <div class="overlay" id="modal-overlay">
+    <div class="modal glass premium-modal premium-modal-horizontal" style="max-width: 550px;">
+      <div class="modal-premium-main-grid">
+        <!-- Left column of premium modal layout -->
+        <div class="modal-premium-left-col">
+          <header class="modal-premium-header">
+            <div class="modal-premium-icon"
+              style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9; border: none !important; display: flex; align-items: center; justify-content: center;">
+              <!-- Beautiful Key / Lock Icon SVG -->
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div class="modal-premium-title">
+              <h3>Acceso Acudiente</h3>
+            </div>
+          </header>
+          <div class="modal-premium-description" style="margin: 0; padding: 0; opacity: 0.8; line-height: 1.5;">
+            Ingresa el código único de 6 dígitos asignado al estudiante para acceder a su información de asistencia.
+          </div>
+        </div>
+
+        <!-- Right column/content -->
+        <div class="modal-body-content" style="display: flex; flex-direction: column; gap: 15px; justify-content: center;">
+          <div>
+            <label style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Código de Estudiante</label>
+            <input class="input-field" id="code-input" type="text" maxlength="8" placeholder="A-12345" style="margin-bottom: 0; text-transform: uppercase; text-align: center; font-weight: 700; font-size: 1.1rem; letter-spacing: 1px;" />
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: flex-end;">
+            <button class="btn-premium-ghost" id="close-modal" onclick="window.closeModalDirect()">Cancelar</button>
+            <button class="btn-premium-primary" id="verify-code" style="background: #0ea5e9;" onclick="window.verifyCode()">Verificar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION TOAST -->
+  <div class="notification" id="notif">
+    <div class="n-title" id="notif-title"></div>
+    <div class="n-msg" id="notif-msg"></div>
+  </div>
+
+  <!-- MODAL: PREMIUM CONFIRMATION -->
+  <div class="overlay" id="confirm-modal-overlay">
+    <div class="modal confirm-modal glass">
+      <div class="confirm-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+      <h3 id="confirm-title">Confirmar Acción</h3>
+      <p id="confirm-msg">¿Estás seguro de que deseas realizar esta acción?</p>
+      <div class="modal-actions full-width">
+        <button class="btn-ghost" id="confirm-cancel">Cancelar</button>
+        <button class="btn-primary" id="confirm-ok">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIGURAR PERFILES -->
+  <div class="overlay" id="config-perfiles-modal-overlay">
+    <div class="modal glass premium-modal" style="max-width: 650px; width: 95%; max-height: 90vh; overflow-y: auto; text-align: left; padding: 25px; border-radius: 24px; border: 1.5px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.15);">
+      
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 25px; border-bottom: 1.5px solid var(--border); padding-bottom: 15px;">
+        <div style="background: var(--glow-blue); color: var(--accent-blue); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: var(--text-main);">Configurar Perfiles</h3>
+          <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: var(--text-muted);">Configura la información del estudiante y sus acudientes</p>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Guardian Profile Card -->
+        <div style="background: rgba(0, 0, 0, 0.01); border: 1.5px solid var(--border); padding: 18px; border-radius: 16px;">
+          <h4 style="color: var(--accent-teal); font-weight: 800; font-size: 1rem; margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Perfil del Acudiente Principal
+          </h4>
+          
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Nombre Completo</label>
+              <input class="input-field" id="acudiente-nombre-input" type="text" placeholder="Ej: Juan Pérez" style="margin: 0;" />
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Edad</label>
+                <input class="input-field" id="acudiente-edad-input" type="number" placeholder="Ej: 35" style="margin: 0;" />
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Contacto</label>
+                <input class="input-field" id="acudiente-contacto-input" type="text" placeholder="Ej: +507 6000-0000" style="margin: 0;" />
+              </div>
+            </div>
+          </div>
+
+          <h4 style="color: var(--text-muted); font-weight: 800; font-size: 0.9rem; margin-top: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-top: 1px dashed var(--border); padding-top: 15px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Segundo Acudiente <span style="font-size: 0.75rem; font-weight: 500; color: var(--muted); text-transform: none; margin-left: auto;">(Opcional)</span>
+          </h4>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Nombre Completo</label>
+              <input class="input-field" id="acudiente2-nombre-input" type="text" placeholder="Ej: María Pérez" style="margin: 0;" />
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Contacto</label>
+              <input class="input-field" id="acudiente2-contacto-input" type="text" placeholder="Ej: +507 6111-1111" style="margin: 0;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Profile Card -->
+        <div style="background: rgba(0, 0, 0, 0.01); border: 1.5px solid var(--border); padding: 18px; border-radius: 16px;">
+          <h4 style="color: var(--accent-blue); font-weight: 800; font-size: 1rem; margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg> Perfil del Estudiante
+          </h4>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Nombre del Estudiante</label>
+                <input class="input-field" id="estudiante-nombre-input" type="text" placeholder="Ej: Ariana García" style="margin: 0;" />
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Código Único</label>
+                <input class="input-field" id="estudiante-codigo-input" type="text" placeholder="Ej: A-12345" style="margin: 0; opacity: 0.8; font-weight: 700; background: var(--bg);" readonly title="El código no se puede editar" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Edad</label>
+                <input class="input-field" id="estudiante-edad-input" type="number" placeholder="Ej: 15" style="margin: 0;" />
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Género</label>
+                <select class="input-field" id="estudiante-genero-input" style="margin: 0; padding: 10px; font-family: inherit;">
+                  <option value="F">Femenino</option>
+                  <option value="M">Masculino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Tipo de Sangre</label>
+                <select class="input-field" id="estudiante-sangre-input" style="margin: 0; padding: 10px; font-family: inherit;">
+                  <option value="">Sin definir</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Alergias</label>
+              <textarea class="input-field" id="estudiante-alergias-input" placeholder="Alergias (Ej: Penicilina, Maní, etc.)" style="margin: 0; min-height: 50px; resize: vertical;"></textarea>
+            </div>
+
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: block;">Enfermedades / Observaciones</label>
+              <textarea class="input-field" id="estudiante-enfermedades-input" placeholder="Enfermedades a considerar (Ej: Asma)" style="margin: 0; min-height: 50px; resize: vertical;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 25px; border-top: 1.5px solid var(--border); padding-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn-premium-ghost" onclick="window.closeConfigPerfilesModal()" style="padding: 10px 20px; border-radius: 12px; font-weight: 700;">Cancelar</button>
+        <button class="btn-premium-primary" onclick="window.saveConfigPerfiles()" style="padding: 10px 20px; border-radius: 12px; background: var(--accent-teal); font-weight: 700; border: none; color: white; cursor: pointer;">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GESTIONAR DÍAS -->
+  <!-- MODAL: GESTIONAR DÍAS -->
+  <div class="overlay" id="modal-manage-days" style="padding: 20px 0;">
+    <div class="modal glass premium-modal modal-manage-days-card">
+      <div class="modal-manage-days-grid">
+        <div class="modal-premium-left-col">
+          <header class="modal-premium-header">
+            <div class="modal-premium-icon"
+              style="background: var(--glow-teal); color: var(--accent-teal); border: none !important;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="modal-premium-title">
+              <h3>Gestionar Días</h3>
+              <p>Horario Semanal</p>
+            </div>
+          </header>
+          <div class="modal-premium-description" style="margin: 0; padding: 0; opacity: 0.8;">
+            Selecciona los días que deseas mostrar en tu registro de asistencia semanal. Los cambios se aplicarán de inmediato.
+          </div>
+
+          <div class="calendar-upload-box" onclick="window.openCalendarConfig()"
+            style="border: 2px dashed #ef4444; border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; color: #ef4444; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; transition: all 0.2s ease; margin-top: 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Calendario Escolar
+          </div>
+        </div>
+
+        <div id="days-checkbox-group" class="days-checkbox-grid">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <div class="modal-actions-days-row">
+        <button onclick="window.closeOverlay('modal-manage-days')" class="btn-premium-ghost">Cancelar</button>
+        <button id="go-to-full-schedule" class="btn-premium-ghost" style="color: var(--accent-blue);">Ver Horario Completo</button>
+        <button id="save-days-config" class="btn-premium-primary">Aplicar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="modal-config-calendar">
+    <div class="modal glass" style="max-width: 450px;">
+      <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Configurar Trimestres</h3>
+      <p>Define manualmente las fechas de inicio y fin para cada trimestre de tu colegio o universidad.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 15px; margin: 20px 0; text-align: left;">
+
+        <!-- Photo Upload Button -->
+        <div class="calendar-upload-box" onclick="document.getElementById('cal-photo-upload').click()"
+          style="border: 2px solid #ef4444; background: transparent; border-radius: 10px; padding: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; color: #ef4444; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; transition: all 0.2s ease; position: relative;"
+          onmouseover="this.style.background='#fef2f2'; this.style.transform='translateY(-2px)';"
+          onmouseout="this.style.background='transparent'; this.style.transform='translateY(0)';"
+          title="Sube una imagen de tu calendario escolar para escanear las fechas automáticamente">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          <span id="cal-upload-text">Subir Calendario por Foto</span>
+          <div id="cal-upload-spinner"
+            style="display: none; position: absolute; right: 14px; width: 20px; height: 20px; border: 3px solid rgba(239,68,68,0.3); border-top-color: #ef4444; border-radius: 50%; animation: spin 1s linear infinite;">
+          </div>
+        </div>
+        <input type="file" id="cal-photo-upload" accept="image/*" style="display: none;"
+          onchange="window.handleCalendarPhoto(event)" />
+
+        <!-- Trimestre 1 -->
+        <div style="background: var(--hover-light); padding: 10px; border-radius: 8px;">
+          <span style="font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 8px;">Trimestre /
+            Semestre I</span>
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Inicio</label>
+              <input class="input-field" type="date" id="cal-t1-start" style="margin-bottom: 0;" />
+            </div>
+            <div style="flex: 1;">
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Fin</label>
+              <input class="input-field" type="date" id="cal-t1-end" style="margin-bottom: 0;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Trimestre 2 -->
+        <div style="background: var(--hover-light); padding: 10px; border-radius: 8px;">
+          <span style="font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 8px;">Trimestre /
+            Semestre II</span>
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Inicio</label>
+              <input class="input-field" type="date" id="cal-t2-start" style="margin-bottom: 0;" />
+            </div>
+            <div style="flex: 1;">
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Fin</label>
+              <input class="input-field" type="date" id="cal-t2-end" style="margin-bottom: 0;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Trimestre 3 -->
+        <div style="background: var(--hover-light); padding: 10px; border-radius: 8px;">
+          <span style="font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 8px;">Trimestre III
+            (Opcional)</span>
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Inicio</label>
+              <input class="input-field" type="date" id="cal-t3-start" style="margin-bottom: 0;" />
+            </div>
+            <div style="flex: 1;">
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Fin</label>
+              <input class="input-field" type="date" id="cal-t3-end" style="margin-bottom: 0;" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="window.closeOverlay('modal-config-calendar')">Cancelar</button>
+        <button class="btn-primary" id="save-calendar-config" onclick="window.saveCalendarConfig()">Guardar
+          Calendario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Agregar Nota al Acudiente (Improved UI) -->
+  <div class="overlay" id="modal-add-note">
+    <div class="modal glass premium-modal premium-modal-horizontal animate-pop" style="max-width: 500px;">
+      <div class="modal-premium-main-grid" style="padding: 24px;">
+        <!-- Left Column (now Header) -->
+        <div class="modal-premium-left-col" style="padding-bottom: 16px; border-bottom: 1.5px solid var(--border); width: 100%; display: flex; flex-direction: column; align-items: flex-start; text-align: left;">
+          <div class="modal-premium-header" style="display: flex; align-items: center; gap: 12px; margin: 0; width: 100%; justify-content: flex-start;">
+            <div class="modal-premium-icon"
+              style="background: var(--glow-blue); color: var(--accent-blue); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <div style="text-align: left;">
+              <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.3px;">Enviar Mensaje</h3>
+              <p style="margin: 2px 0 0 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
+                Para: <span id="note-student-name" style="color: var(--accent-blue); font-weight: 800;">Ariana García</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body (Form and buttons) -->
+        <div class="modal-body-content" style="width: 100%; display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <label
+              style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              Mensaje Personalizado
+              <span
+                style="font-size: 0.65rem; color: var(--accent-blue); background: var(--glow-blue); padding: 2px 8px; border-radius: 10px; font-weight: 800;">Notificación
+                Inmediata</span>
+            </label>
+            <textarea id="teacher-note-textarea" class="input-field message-textarea-premium"
+              style="height: 120px; resize: none; padding: 16px; font-size: 0.95rem; line-height: 1.5; border-radius: 12px; margin-bottom: 0; width: 100%; box-sizing: border-box;"
+              placeholder="Ej: Hola, quería informarle que el estudiante participó activamente en clase hoy."></textarea>
+          </div>
+
+          <div class="modal-actions-premium" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 5px; width: 100%;">
+            <button class="btn-premium-ghost" style="padding: 10px 20px; font-size: 0.85rem; border-radius: 10px;" onclick="window.closeOverlay('modal-add-note')">Cancelar</button>
+            <button class="btn-premium-primary" id="save-note-btn"
+              style="padding: 10px 20px; font-size: 0.85rem; background: var(--accent-blue); border: none; color: white; border-radius: 10px; font-weight: 700; box-shadow: 0 4px 12px var(--glow-blue);">Enviar Nota</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONTACTAR DOCENTE -->
+  <div class="overlay" id="modal-contact-docente">
+    <div class="modal-contact-card">
+      <!-- Left side: Profile Banner & Info -->
+      <div class="contact-card-profile">
+        <div class="contact-card-avatar-wrap">
+          <img id="contact-teacher-img" src="" alt="Docente">
+        </div>
+        <div class="contact-card-profile-text">
+          <h3 id="contact-teacher-name">Prof. Guillermo</h3>
+          <p id="contact-teacher-role">Docente de Matemáticas</p>
+        </div>
+      </div>
+      
+      <!-- Right side: Contact details & Actions -->
+      <div class="contact-card-info">
+        <div class="contact-card-header-desc">
+          <h4>Información de Contacto</h4>
+          <p>Docente encargado del grupo escolar</p>
+        </div>
+        
+        <div class="contact-details-grid">
+          <div class="detail-item">
+            <span class="detail-label">Cátedra / Materia</span>
+            <span class="detail-val" id="contact-teacher-subject">Matemáticas y Física</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Teléfono Registrado</span>
+            <span class="detail-val" id="contact-teacher-phone">+507 0000-0000</span>
+          </div>
+        </div>
+        
+        <!-- Direct Quick Actions -->
+        <div class="contact-actions-row">
+          <a href="#" id="btn-call-teacher" class="contact-action-btn call-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            Llamar
+          </a>
+          <a href="#" id="btn-whatsapp-teacher" class="contact-action-btn whatsapp-btn" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+            </svg>
+            WhatsApp
+          </a>
+        </div>
+        
+        <button class="btn-premium-ghost close-contact-btn" style="margin-top: 5px;" onclick="window.closeOverlay('modal-contact-docente')">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="modal-add-student">
+    <div class="modal glass premium-modal premium-modal-horizontal">
+      <div class="modal-premium-main-grid">
+        <div class="modal-premium-left-col">
+          <header class="modal-premium-header">
+            <div class="modal-premium-icon"
+              style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); border: none !important;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="7" r="4" />
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              </svg>
+            </div>
+            <div class="modal-premium-title">
+              <h3 data-i18n="add_student_title">Nuevo Estudiante</h3>
+            </div>
+          </header>
+        </div>
+
+        <div class="modal-body-content">
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Nombre
+              del Estudiante</label>
+            <input class="input-field" id="new-student-name" type="text" placeholder="Ej: Juan Pérez"
+              style="margin-bottom: 0;" />
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button class="btn-premium-ghost" id="cancel-add-student">Cancelar</button>
+            <button class="btn-premium-primary" id="save-new-student" onclick="window.saveNewStudent(event)"
+              ontouchstart="window.saveNewStudent(event)">Añadir Estudiante</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="modal-add-group">
+    <div class="modal glass premium-modal premium-modal-horizontal">
+      <div class="modal-premium-main-grid">
+        <div class="modal-premium-left-col">
+          <header class="modal-premium-header">
+            <div class="modal-premium-icon"
+              style="background: rgba(168, 85, 247, 0.1); color: #a855f7; border: none !important;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+            </div>
+            <div class="modal-premium-title">
+              <h3 data-i18n="add_group_title">Nuevo Grupo</h3>
+            </div>
+          </header>
+        </div>
+
+        <div class="modal-body-content">
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Nombre
+              del Grupo</label>
+            <input class="input-field" id="new-group-name" type="text" placeholder="Ej: 12°A - Ciencias"
+              style="margin-bottom: 0;" />
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button class="btn-premium-ghost" id="cancel-add-group">Cancelar</button>
+            <button class="btn-premium-primary" id="save-new-group" onclick="window.saveNewGroup(event)"
+              ontouchstart="window.saveNewGroup(event)" style="background: #a855f7;">Crear Grupo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="modal-time-picker">
+    <div class="modal glass" style="max-width: 360px; border-radius: 20px; padding: 24px;">
+      <h3 id="modal-time-picker-title" style="margin-top:0; margin-bottom:8px;">⏱️ Seleccionar Hora</h3>
+      <p style="margin-bottom: 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.4;">Establece la hora y los minutos que desees para este bloque de clase.</p>
+      
+      <div class="time-picker-wrapper" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; text-align: left;">
+        <div class="time-input-container" style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Hora y Minutos</label>
+          <input type="time" class="input-field" id="time-picker-manual"
+            style="letter-spacing: normal; font-size: 1.5rem; font-weight: 700; text-align: center; height: 50px; font-family: 'DM Mono', monospace;" />
+        </div>
+        
+        <div class="time-select-container" style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">O usar hora en punto</label>
+          <select class="input-field" id="time-picker-select" style="height: 42px;">
+            <option value="0">00:00 (12:00 AM)</option>
+            <option value="1">01:00 (1:00 AM)</option>
+            <option value="2">02:00 (2:00 AM)</option>
+            <option value="3">03:00 (3:00 AM)</option>
+            <option value="4">04:00 (4:00 AM)</option>
+            <option value="5">05:00 (5:00 AM)</option>
+            <option value="6">06:00 (6:00 AM)</option>
+            <option value="7">07:00 (7:00 AM)</option>
+            <option value="8">08:00 (8:00 AM)</option>
+            <option value="9">09:00 (9:00 AM)</option>
+            <option value="10">10:00 (10:00 AM)</option>
+            <option value="11">11:00 (11:00 AM)</option>
+            <option value="12">12:00 (12:00 PM)</option>
+            <option value="13">13:00 (1:00 PM)</option>
+            <option value="14">14:00 (2:00 PM)</option>
+            <option value="15">15:00 (3:00 PM)</option>
+            <option value="16">16:00 (4:00 PM)</option>
+            <option value="17">17:00 (5:00 PM)</option>
+            <option value="18">18:00 (6:00 PM)</option>
+            <option value="19">19:00 (7:00 PM)</option>
+            <option value="20">20:00 (8:00 PM)</option>
+            <option value="21">21:00 (9:00 PM)</option>
+            <option value="22">22:00 (10:00 PM)</option>
+            <option value="23">23:00 (11:00 PM)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button class="btn-ghost" style="padding: 10px 20px; border-radius: 10px;" onclick="window.closeOverlay('modal-time-picker')">Cancelar</button>
+        <button class="btn-primary" style="padding: 10px 20px; border-radius: 10px;" onclick="window.savePickedTime()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="modal-add-schedule">
+    <div class="modal glass premium-modal modal-schedule-responsive">
+      <div class="modal-premium-header" style="position: relative;">
+        <div class="modal-premium-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        </div>
+        <div>
+          <h3 data-i18n="modal_schedule_title">Agregar al Horario</h3>
+          <p data-i18n="modal_schedule_desc">Configura una nueva sesión de clase en tu horario semanal.</p>
+        </div>
+        <button class="settings-modal-close-btn" onclick="window.closeOverlay('modal-add-schedule')" style="position: absolute; top: 16px; right: 18px;">&times;</button>
+      </div>
+
+      <div class="modal-schedule-form-grid">
+        <!-- Column 1: Subject, Group, Tag Color -->
+        <div class="modal-schedule-col">
+          <div>
+            <label class="schedule-field-label">Materia / Actividad</label>
+            <input class="input-field" id="schedule-subject" type="text" placeholder="Ej: Matemáticas" style="margin-bottom: 0;" />
+          </div>
+
+          <div>
+            <label class="schedule-field-label">Grupo / Salón</label>
+            <div class="custom-select" id="group-select-wrapper" style="width: 100%; margin-top: 4px;">
+              <div class="select-trigger input-field" id="group-trigger" style="margin-bottom: 0; padding: 12px 16px;">
+                <span class="trigger-text" id="group-text" style="font-weight: 600; color: var(--text);">Seleccionar grupo...</span>
+                <svg class="arrow-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left: auto;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="select-options" id="group-options" style="text-align: left; max-height: 200px; overflow-y: auto;">
+                <!-- Options injected via JS -->
+              </div>
+            </div>
+            <input type="hidden" id="schedule-group-select" value="">
+          </div>
+
+          <div>
+            <label class="schedule-field-label">Color de Etiqueta</label>
+            <div style="display: flex; gap: 8px; margin-top: 5px;">
+              <div class="color-opt active" data-color="#3b82f6" style="background: #3b82f6; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;"></div>
+              <div class="color-opt" data-color="#14b8a6" style="background: #14b8a6; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;"></div>
+              <div class="color-opt" data-color="#f59e0b" style="background: #f59e0b; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;"></div>
+              <div class="color-opt" data-color="#ec4899" style="background: #ec4899; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;"></div>
+              <div class="color-opt" data-color="#8b5cf6" style="background: #8b5cf6; width: 28px; height: 28px; border-radius: 8px; cursor: pointer;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Day & Interactive Time Picker (Hours + Exact Minutes + AM/PM) -->
+        <div class="modal-schedule-col">
+          <div>
+            <label class="schedule-field-label">Día de la Semana</label>
+            <select class="input-field" id="schedule-day-select" style="margin-bottom: 0;">
+              <option value="mon">Lunes</option>
+              <option value="tue">Martes</option>
+              <option value="wed">Miércoles</option>
+              <option value="thu">Jueves</option>
+              <option value="fri">Viernes</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="schedule-field-label">Hora de Inicio (Hora Exacta y Minutos)</label>
+            <div class="interactive-time-picker">
+              <div class="time-picker-unit">
+                <span class="time-unit-title">Hora</span>
+                <select id="schedule-time-hour" class="input-field time-unit-select" onchange="window.updateScheduleTimeValue()">
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07" selected>07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+              </div>
+
+              <span class="time-picker-dots">:</span>
+
+              <div class="time-picker-unit">
+                <span class="time-unit-title">Minutos</span>
+                <input type="number" id="schedule-time-minute-input" class="input-field time-unit-input" min="0" max="59" value="00" placeholder="00" onchange="window.updateScheduleTimeValue()" oninput="window.updateScheduleTimeValue()">
+              </div>
+
+              <div class="time-picker-unit ampm-unit">
+                <span class="time-unit-title">Jornada</span>
+                <div class="ampm-toggle-container">
+                  <button type="button" class="ampm-toggle-btn active" id="btn-ampm-am" onclick="window.setScheduleAmPm('AM')">AM</button>
+                  <button type="button" class="ampm-toggle-btn" id="btn-ampm-pm" onclick="window.setScheduleAmPm('PM')">PM</button>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="schedule-time-select" value="07:00 AM">
+            <input type="hidden" id="schedule-ampm-val" value="AM">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 25px;">
+        <button class="btn-ghost" onclick="window.closeOverlay('modal-add-schedule')">Cancelar</button>
+        <button class="btn-primary" id="save-new-schedule" onclick="window.saveNewSchedule()">Guardar en Horario</button>
+      </div>
+    </div>
+  </div>
+  <!-- MODAL: AGREGAR TAREA -->
+  <div class="overlay" id="modal-add-tarea">
+    <div class="modal glass premium-modal premium-modal-horizontal">
+      <div class="modal-premium-main-grid">
+        <div class="modal-premium-left-col">
+          <header class="modal-premium-header">
+            <div class="modal-premium-icon"
+              style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9; border: none !important;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </div>
+            <div class="modal-premium-title">
+              <h3 data-i18n="btn_new_task">Registrar Nueva Tarea</h3>
+            </div>
+          </header>
+          <div class="modal-premium-description" style="margin: 0; padding: 0; opacity: 0.8;"
+            data-i18n="modal_task_desc">
+            Asigna una nueva actividad pendiente para este grupo. Indica el título y la fecha de entrega.
+          </div>
+        </div>
+
+        <div class="modal-body-content">
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;" data-i18n="task_title_label">Título
+              de la Tarea</label>
+            <input class="input-field" id="new-task-title" type="text" placeholder="Ej: Investigación sobre la Célula"
+              style="margin-bottom: 0;" />
+          </div>
+
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;" data-i18n="task_subject_label">Materia</label>
+            <input class="input-field" id="new-task-subject" type="text" placeholder="Ej: Ciencias Naturales"
+              style="margin-bottom: 0;" />
+          </div>
+
+          <div>
+            <label style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Asignar a Grupo</label>
+            <select class="input-field" id="new-task-group" style="margin-bottom: 0; cursor: pointer;">
+              <option value="all">Todos los grupos</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;" data-i18n="task_date_label">Fecha
+                de Entrega</label>
+              <input class="input-field custom-date-trigger" id="new-task-date" type="text" readonly placeholder="AAAA-MM-DD" style="margin-bottom: 0; cursor: pointer;" />
+            </div>
+            <div>
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;" data-i18n="task_points_label">Puntos
+                / Valor</label>
+              <input class="input-field" id="new-task-points" type="number" placeholder="100"
+                style="margin-bottom: 0;" />
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;" data-i18n="task_photo_label">Adjuntar Foto / Imagen</label>
+            <div class="task-photo-upload-box" id="task-photo-dropzone" onclick="document.getElementById('new-task-photo-input').click()" style="border: 1.5px dashed var(--border); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; color: var(--accent-blue); font-weight: 700; font-size: 0.85rem; background: var(--surface); transition: all 0.2s ease;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span id="new-task-photo-label" data-i18n="upload_task_photo">Subir Foto de la Tarea</span>
+            </div>
+            <input type="file" id="new-task-photo-input" accept="image/*" style="display: none;" />
+            <div id="new-task-photo-preview" style="display: none; margin-top: 8px; position: relative; width: fit-content;">
+              <img id="new-task-photo-img" src="" alt="Vista previa" style="max-height: 100px; max-width: 100%; border-radius: 8px; border: 1px solid var(--border); object-fit: cover;" />
+              <button type="button" id="remove-task-photo-btn" style="position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">×</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button class="btn-premium-ghost" onclick="window.closeOverlay('modal-add-tarea')" data-i18n="btn_cancel">Cancelar</button>
+            <button class="btn-premium-primary" id="save-new-task" style="background: #0ea5e9;">Guardar Tarea</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATTENDANCE CHOICE MENU -->
+  <div id="attendance-choice-menu" class="choice-menu">
+    <div class="choice-option att-opt" data-status="empty">
+      <span class="status-dot empty"
+        style="width:16px; height:16px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--text-secondary); background: transparent; border-radius: 50%;">
+      </span> <span data-i18n="status_empty">Vacío</span>
+    </div>
+    <div class="choice-option att-opt" data-status="present">
+      <span class="status-dot present"
+        style="width:16px; height:16px; display: flex; align-items: center; justify-content: center;">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </span> <span data-i18n="status_present">Presente</span>
+    </div>
+    <div class="choice-option att-opt" data-status="late">
+      <span class="status-dot late"
+        style="width:16px; height:16px; display: flex; align-items: center; justify-content: center;">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </span> <span data-i18n="status_late">Tardanza</span>
+    </div>
+    <div class="choice-option att-opt" data-status="absent">
+      <span class="status-dot absent"
+        style="width:16px; height:16px; display: flex; align-items: center; justify-content: center;">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </span> <span data-i18n="status_absent">Falta</span>
+    </div>
+  </div>
+
+  <!-- MOBILE NAVIGATION (Moved to absolute bottom for z-index safety) -->
+  <nav class="mobile-nav" style="display: none; z-index: 2147483500 !important;">
+    <a href="javascript:void(0)" class="mobile-nav-item" id="m-nav-asistencia"
+      onclick="window.handleMobileNav('asistencia', event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span>Asistencia</span>
+    </a>
+    <a href="javascript:void(0)" class="mobile-nav-item" id="m-nav-grupos"
+      onclick="window.handleMobileNav('grupos', event)">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <rect x="4" y="12" width="4" height="8" rx="1"></rect>
+        <rect x="10" y="4" width="4" height="16" rx="1"></rect>
+        <rect x="16" y="8" width="4" height="12" rx="1"></rect>
+      </svg>
+      <span>Grupos</span>
+    </a>
+    <a href="javascript:void(0)" class="mobile-nav-item" id="m-nav-alumnos"
+      onclick="window.handleMobileNav('alumnos', event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+      <span>Alumnos</span>
+    </a>
+    <a href="javascript:void(0)" class="mobile-nav-item" id="m-nav-tareas"
+      onclick="window.handleMobileNav('tareas', event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        <path d="M9 14l2 2 4-4"></path>
+      </svg>
+      <span>Tareas</span>
+    </a>
+    <a href="javascript:void(0)" class="mobile-nav-item" id="m-nav-mensajes"
+      onclick="window.handleMobileNav('mensajes', event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path
+          d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+        </path>
+      </svg>
+      <span style="position:relative;">Mensajes</span>
+    </a>
+
+  </nav>
+
+  <!-- MOBILE CALENDAR MODAL -->
+  <div class="calendar-modal-overlay" id="calendar-modal-overlay" style="display: none;">
+    <div class="calendar-modal-card">
+      <div class="calendar-modal-header">
+        <span class="calendar-nav" id="m-cal-prev">&lt;</span>
+        <span id="m-calendar-month-year">Marzo 2026</span>
+        <span class="calendar-nav" id="m-cal-next">&gt;</span>
+      </div>
+      <div class="calendar-grid" id="m-calendar-grid">
+        <!-- Rendered via JS -->
+      </div>
+      <button class="btn-premium-primary" id="close-m-calendar"
+        style="width: 100%; margin-top: 15px;">Entendido</button>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR CITACIÓN -->
+  <div class="overlay" id="modal-add-citacion">
+    <div class="modal glass premium-modal premium-modal-horizontal">
+      <div class="modal-premium-main-grid">
+        <div class="modal-premium-left-col">
+          <header class="modal-premium-header">
+            <div class="modal-premium-icon"
+              style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: none !important;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <div class="modal-premium-title">
+              <h3>Nueva Citación</h3>
+              <p>Mensaje exclusivo al acudiente</p>
+            </div>
+          </header>
+          <div class="modal-premium-description" style="margin: 0; padding: 0; opacity: 0.8;">
+            Envía una citación o mensaje directo exclusivo para el acudiente de este estudiante.
+          </div>
+        </div>
+
+        <div class="modal-body-content">
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Acudiente
+              / Tutor</label>
+            <input class="input-field" id="citacion-parent" type="text" placeholder="Ej: Pedro García"
+              style="margin-bottom: 0;" />
+          </div>
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Estudiante</label>
+            <input class="input-field" id="citacion-student" type="text" placeholder="Ej: Ariana García"
+              style="margin-bottom: 0;" />
+          </div>
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Motivo
+              de la Citación</label>
+            <input class="input-field" id="citacion-reason" type="text" placeholder="Ej: Rendimiento Académico"
+              style="margin-bottom: 0;" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Fecha</label>
+              <input class="input-field custom-date-trigger" id="citacion-date" type="text" readonly placeholder="AAAA-MM-DD" style="margin-bottom: 0; cursor: pointer;" />
+            </div>
+            <div>
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Hora</label>
+              <input class="input-field custom-time-trigger" id="citacion-time" type="text" readonly placeholder="--:-- --" style="margin-bottom: 0; cursor: pointer;" />
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button class="btn-premium-ghost" id="cancel-citacion"
+              onclick="window.closeOverlay('modal-add-citacion')">Cancelar</button>
+            <button class="btn-premium-primary" id="save-new-citacion">Publicar Citación</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR REUNIÓN -->
+  <div class="overlay" id="modal-add-reunion">
+    <div class="modal glass premium-modal premium-modal-horizontal">
+      <div class="modal-premium-main-grid">
+        <div class="modal-premium-left-col">
+          <header class="modal-premium-header">
+            <div class="modal-premium-icon"
+              style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: none !important;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="modal-premium-title">
+              <h3>Nueva Reunión</h3>
+              <p>Convocatoria General del Grupo</p>
+            </div>
+          </header>
+          <div class="modal-premium-description" style="margin: 0; padding: 0; opacity: 0.8;">
+            Programa una reunión general o cita informativa para todo el grupo de acudientes.
+          </div>
+        </div>
+
+        <div class="modal-body-content">
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Grupo / Salón</label>
+            <input class="input-field" id="reunion-group-name" type="text" readonly style="margin-bottom: 0; background: rgba(0,0,0,0.03); cursor: not-allowed;" />
+          </div>
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Motivo de la Reunión</label>
+            <input class="input-field" id="reunion-reason" type="text" placeholder="Ej: Entrega de Boletines"
+              style="margin-bottom: 0;" />
+          </div>
+          <div>
+            <label
+              style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Lugar / Medio</label>
+            <input class="input-field" id="reunion-place" type="text" placeholder="Ej: Aula de clases o Google Meet"
+              style="margin-bottom: 0;" />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Fecha</label>
+              <input class="input-field custom-date-trigger" id="reunion-date" type="text" readonly placeholder="AAAA-MM-DD" style="margin-bottom: 0; cursor: pointer;" />
+            </div>
+            <div>
+              <label
+                style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; display: block;">Hora</label>
+              <input class="input-field custom-time-trigger" id="reunion-time" type="text" readonly placeholder="--:-- --" style="margin-bottom: 0; cursor: pointer;" />
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button class="btn-premium-ghost" id="cancel-reunion"
+              onclick="window.closeOverlay('modal-add-reunion')">Cancelar</button>
+            <button class="btn-premium-primary" id="save-new-reunion">Publicar Reunión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MASTER PASSWORD PROMPT -->
+  <div class="overlay" id="modal-master-password">
+    <div class="modal glass premium-modal" style="max-width: 380px;">
+      <div class="modal-premium-header">
+        <div class="modal-premium-icon" style="background: #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h3>Revisión de Seguridad</h3>
+      </div>
+      <p style="margin-top: 5px;">Se requiere la contraseña maestra para activar o desactivar el candado de Tinta permanente.</p>
+      <div style="margin-top: 20px;">
+        <input type="password" id="master-password-prompt-input" class="input-field" placeholder="Contraseña Maestra"
+          style="font-family: monospace; text-align: center; font-size: 1.1rem; letter-spacing: 2px;">
+        <p id="master-password-prompt-error"
+          style="color: #ef4444; font-size: 0.8rem; margin-top: 8px; display: none; text-align: center;">Contraseña
+          incorrecta</p>
+      </div>
+      <div class="modal-actions-premium" style="margin-top: 25px;">
+        <button class="btn-premium-ghost" onclick="window.closeOverlay('modal-master-password')">Cancelar</button>
+        <button class="btn-premium-primary" id="master-password-confirm-btn">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- BLOQUEO FAB (MOVIL) -->
+
+  <!-- SECCIÓN MÓVIL ELIMINADA POR DUPLICACIÓN (CONSOLIDADA AL FINAL) -->
+
+
+  <!-- MODAL: PERFIL DE ESTUDIANTE V6 (TOTAL REBUILD) -->
+  <div id="modal-profile-v6" class="overlay profile-v6-overlay">
+    <div class="resumen-estudiante-modal-container" id="re-container-mount" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;">
+      <!-- Componente renderizado por JS -->
+    </div>
+  </div>
+
+
+
+  <!-- Premium Settings Modal -->
+  <!-- Premium Settings Modal -->
+  <div class="overlay" id="modal-basic-settings">
+    <div class="settings-premium-modal">
+      <div class="settings-modal-header">
+        <div class="settings-header-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+        </div>
+        <div class="settings-header-titles">
+          <h2>Configuración</h2>
+          <p>Ajustes generales y copia de seguridad</p>
+        </div>
+        <button class="settings-modal-close-btn" onclick="window.closeOverlay('modal-basic-settings')">&times;</button>
+      </div>
+
+      <div class="settings-modal-body">
+        <!-- Section: Google Account & Cloud Sync -->
+        <div class="settings-card-block">
+          <h4 class="settings-block-title">Cuenta de Google y Nube</h4>
+          <div class="settings-row-item">
+            <div class="settings-row-label">
+              <span class="settings-row-icon" style="background: rgba(234, 67, 53, 0.1); color: #ea4335;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                </svg>
+              </span>
+              <div>
+                <strong>Cuenta de Google</strong>
+                <div class="google-sync-subtitle" style="font-size:0.75rem; color:var(--muted);">Sincroniza tus datos y notas en Google Drive</div>
+              </div>
+            </div>
+            <button type="button" class="btn-google-connect" onclick="window.toggleGoogleAccount()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+              <span class="google-btn-text">Conectar Google</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 1: Appearance & Language -->
+        <div class="settings-card-block">
+          <h4 class="settings-block-title">Preferencias Visuales</h4>
+
+          <div class="settings-row-item">
+            <div class="settings-row-label">
+              <span class="settings-row-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+              </span>
+              <span>Tema Visual</span>
+            </div>
+            <div class="theme-options-flex">
+              <button onclick="window.setAppTheme('light')" class="theme-btn-v2" id="basic-theme-light">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="5"></circle>
+                </svg>
+                Claro
+              </button>
+              <button onclick="window.setAppTheme('dark')" class="theme-btn-v2" id="basic-theme-dark">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                Oscuro
+              </button>
+              <button onclick="window.setAppTheme('system')" class="theme-btn-v2" id="basic-theme-system">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                </svg>
+                Sistema
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-row-item">
+            <div class="settings-row-label">
+              <span class="settings-row-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </span>
+              <span>Idioma de Aplicación</span>
+            </div>
+            <select id="basic-language-select" class="settings-select" onchange="window.setLanguage(this.value)">
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Section: Class Alarms & Local Notifications -->
+        <div class="settings-card-block">
+          <h4 class="settings-block-title">Notificaciones y Recordatorios de Horario</h4>
+
+          <!-- Global Toggle -->
+          <div class="settings-row-item">
+            <div class="settings-row-label">
+              <span class="settings-row-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </span>
+              <div>
+                <strong>Activar Notificaciones Globales</strong>
+                <div style="font-size:0.75rem; color:var(--muted);">Avisos automáticos de clases y asistencias</div>
+              </div>
+            </div>
+            <label class="alarm-switch">
+              <input type="checkbox" id="notif-global-toggle" onchange="window.saveNotificationSettingsUI()">
+              <span class="alarm-slider"></span>
+            </label>
+          </div>
+
+          <!-- Advance Minutes Selector -->
+          <div class="settings-row-item">
+            <div class="settings-row-label">
+              <span class="settings-row-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </span>
+              <span>Anticipación de Recordatorio Previo</span>
+            </div>
+            <select id="notif-advance-select" class="settings-select" onchange="window.saveNotificationSettingsUI()">
+              <option value="5">5 min antes</option>
+              <option value="10" selected>10 min antes</option>
+              <option value="15">15 min antes</option>
+              <option value="30">30 min antes</option>
+            </select>
+          </div>
+
+          <!-- Notification Types Grid/List -->
+          <div style="background: rgba(0,0,0,0.03); padding: 12px; border-radius: 12px; margin-top: 8px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box; overflow-x: hidden;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Tipos de Notificación</div>
+
+            <!-- Type 1: Recordatorio Previo -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap: 8px; width: 100%; box-sizing: border-box;">
+              <span style="font-size: 0.82rem; color: var(--text); flex: 1; min-width: 0; word-break: break-word;">Recordatorio previo de clase</span>
+              <label class="alarm-switch" style="flex-shrink: 0;">
+                <input type="checkbox" id="notif-type-advance" onchange="window.saveNotificationSettingsUI()">
+                <span class="alarm-slider"></span>
+              </label>
+            </div>
+
+            <!-- Type 2: Inicio de Clase (con Deep Link) -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap: 8px; width: 100%; box-sizing: border-box;">
+              <span style="font-size: 0.82rem; color: var(--text); flex: 1; min-width: 0; word-break: break-word;">Aviso de inicio de clase (Deep Link)</span>
+              <label class="alarm-switch" style="flex-shrink: 0;">
+                <input type="checkbox" id="notif-type-start" onchange="window.saveNotificationSettingsUI()">
+                <span class="alarm-slider"></span>
+              </label>
+            </div>
+
+            <!-- Type 3: Asistencia Pendiente -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap: 8px; width: 100%; box-sizing: border-box;">
+              <span style="font-size: 0.82rem; color: var(--text); flex: 1; min-width: 0; word-break: break-word;">Recordatorio de asistencia pendiente</span>
+              <label class="alarm-switch" style="flex-shrink: 0;">
+                <input type="checkbox" id="notif-type-pending" onchange="window.saveNotificationSettingsUI()">
+                <span class="alarm-slider"></span>
+              </label>
+            </div>
+
+            <!-- Type 4: Resumen Diario -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap: 8px; width: 100%; box-sizing: border-box;">
+              <span style="font-size: 0.82rem; color: var(--text); flex: 1; min-width: 0; word-break: break-word;">Resumen diario al finalizar la jornada</span>
+              <label class="alarm-switch" style="flex-shrink: 0;">
+                <input type="checkbox" id="notif-type-summary" onchange="window.saveNotificationSettingsUI()">
+                <span class="alarm-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sound Selector -->
+          <div class="settings-row-item" style="margin-top: 10px;">
+            <div class="settings-row-label">
+              <span class="settings-row-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              </span>
+              <span>Tono de Sonido</span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; width:100%; box-sizing:border-box;">
+              <select id="alarm-sound-select" class="settings-select" onchange="window.saveNotificationSettingsUI()" style="flex:1; min-width:140px;">
+                <option value="campana">Campana Educativa</option>
+                <option value="alarma">Alarma Escolar</option>
+                <option value="timbre">Timbre de Cambio</option>
+                <option value="digital">Tono Digital</option>
+                <option value="melodia">Melodía Corta</option>
+              </select>
+              <button type="button" onclick="window.playAlarmSound(document.getElementById('alarm-sound-select').value)" style="padding:6px 12px; border-radius:8px; border:none; background:var(--accent-blue); color:white; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; flex-shrink:0;" title="Probar sonido">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Probar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Comportamiento Automático -->
+        <div class="settings-card-block">
+          <h4 class="settings-block-title">Comportamiento Automático</h4>
+
+          <div class="settings-row-item">
+            <div class="settings-row-label">
+              <span class="settings-row-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </span>
+              <div>
+                <strong>Falta Automática a Medianoche</strong>
+                <div style="font-size:0.75rem; color:var(--muted);">Si no se pasa asistencia, las casillas vacías se rellenan con <em>Falta</em> a las 12:00 AM</div>
+              </div>
+            </div>
+            <label class="alarm-switch">
+              <input type="checkbox" id="auto-falta-midnight-toggle" onchange="window.saveAutoFaltaConfig()">
+              <span class="alarm-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 2: Backup & Data Management -->
+        <div class="settings-card-block">
+          <h4 class="settings-block-title">Copia de Seguridad y Datos</h4>
+
+          <div class="backup-actions-grid">
+            <!-- Export / Download Backup Button -->
+            <button class="backup-action-btn export-btn" onclick="window.exportBackupJSON()">
+              <div class="backup-btn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </div>
+              <div class="backup-btn-text">
+                <strong>Exportar Copia de Seguridad</strong>
+                <span>Descargar respaldo completo (.JSON)</span>
+              </div>
+            </button>
+
+            <!-- Import Backup Button -->
+            <button class="backup-action-btn import-btn" onclick="document.getElementById('import-backup-file').click()">
+              <div class="backup-btn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+              </div>
+              <div class="backup-btn-text">
+                <strong>Importar Información</strong>
+                <span>Restaurar desde archivo (.JSON)</span>
+              </div>
+            </button>
+            <input type="file" id="import-backup-file" accept=".json" style="display: none;"
+              onchange="window.importBackupJSON(event)">
+          </div>
+        </div>
+
+        <!-- Accept Button -->
+        <div class="settings-modal-footer" style="display:flex; justify-content:center; padding: 16px 0 4px;">
+          <button class="btn-settings-done" onclick="window.closeOverlay('modal-basic-settings')" style="max-width:260px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+            Aceptar y Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+
+  <!-- Bind role card clicks AFTER the module loads its window functions -->
+  <script>
+    window.addEventListener('load', function () {
+      // Poll until functions are ready (handles async module loading)
+      var attempts = 0;
+      var interval = setInterval(function () {
+        attempts++;
+        if (typeof window.openDocenteMode === 'function' && typeof window.openCodeModal === 'function') {
+          clearInterval(interval);
+          var docenteCard = document.querySelector('.role-card.docente');
+          var acudienteCard = document.querySelector('.role-card.acudiente');
+          if (docenteCard) {
+            docenteCard.onclick = null;
+            docenteCard.addEventListener('click', function () { window.openDocenteMode(); });
+          }
+          if (acudienteCard) {
+            acudienteCard.onclick = null;
+            acudienteCard.addEventListener('click', function () { window.openCodeModal(); });
+          }
+        }
+        if (attempts > 50) clearInterval(interval); // Give up after 5s
+      }, 100);
+    });
+  </script>
+
+  <!-- Mobile FABs for Portrait Mode -->
+
+  <!-- COMPONENTES MÓVILES (SOLO PORTRAIT) -->
+  <div id="lock-menu-mobile" class="lock-menu-mobile-v2" style="display: none;">
+    <div class="lock-menu-header">Bloqueo</div>
+    <div class="lock-menu-options">
+      <div id="lock-lbl-pencil-m" class="lock-option" onclick="window.handleLockOptionClick('pencil')">A Lápiz</div>
+      <div id="lock-lbl-ink-m" class="lock-option" onclick="window.handleLockOptionClick('ink')">Tinta permanente</div>
+    </div>
+  </div>
+
+  <div class="fab-container-mobile" id="mobile-fab-container">
+    <button id="mobile-lock-fab" class="fab-mobile fab-lock hidden" onclick="window.toggleLockMenu(event)">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+    </button>
+    <button id="fab-add" class="fab-mobile fab-add hidden" onclick="window.handleMobileNav('fab', event)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </button>
+    <button id="mobile-auto-fab" class="fab-mobile fab-auto hidden" onclick="window.autoAsistencia()" title="Auto Asistencia">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- MODAL: SELECTOR DE FECHA PERSONALIZADO -->
+  <div class="custom-picker-overlay" id="custom-date-picker-modal" style="display: none;">
+    <div class="custom-picker-card">
+      <div class="custom-date-picker-header">
+        <div class="custom-date-picker-year" id="custom-date-header-year">2026</div>
+        <div class="custom-date-picker-full" id="custom-date-header-full">jueves, 21 de may.</div>
+      </div>
+      <div class="custom-date-picker-body">
+        <div class="custom-date-picker-month-nav">
+          <button type="button" class="month-nav-btn" id="custom-date-prev-month">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <span class="custom-date-picker-month-label" id="custom-date-month-label">mayo de 2026</span>
+          <button type="button" class="month-nav-btn" id="custom-date-next-month">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+        <div class="custom-date-picker-weekdays">
+          <span>DO</span><span>LU</span><span>MA</span><span>MI</span><span>JU</span><span>VI</span><span>SA</span>
+        </div>
+        <div class="custom-date-picker-days-grid" id="custom-date-days-grid">
+          <!-- Dinámico -->
+        </div>
+      </div>
+      <div class="custom-picker-actions">
+        <button class="btn-picker-flat text-danger" id="custom-date-clear">Borrar</button>
+        <button class="btn-picker-flat" id="custom-date-today" style="color: var(--accent-teal, #14b8a6);">Hoy</button>
+        <div style="flex: 1;"></div>
+        <button class="btn-picker-flat" id="custom-date-cancel">Cancelar</button>
+        <button class="btn-picker-flat btn-picker-primary" id="custom-date-submit">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SELECTOR DE HORA PERSONALIZADO -->
+  <div class="custom-picker-overlay" id="custom-time-picker-modal" style="display: none;">
+    <div class="custom-picker-card time-picker-card mode-clock">
+      
+      <!-- VISTA RELOJ -->
+      <div class="time-picker-view-clock">
+        <div class="time-picker-header">
+          <div class="time-picker-header-digits">
+            <span class="time-header-digit active" id="time-header-hour">01</span>
+            <span class="time-header-colon">:</span>
+            <span class="time-header-digit" id="time-header-min">30</span>
+          </div>
+          <div class="time-picker-header-ampm">
+            <span class="time-header-ampm-btn active" id="time-header-am-btn">AM</span>
+            <span class="time-header-ampm-btn" id="time-header-pm-btn">PM</span>
+          </div>
+        </div>
+        
+        <div class="time-picker-body-clock">
+          <div class="clock-face" id="clock-face-container">
+            <div class="clock-center-pivot"></div>
+            <div class="clock-hand-needle" id="clock-needle">
+              <div class="clock-hand-line"></div>
+              <div class="clock-hand-bubble"></div>
+            </div>
+            <div class="clock-numbers-layer" id="clock-numbers-layer">
+              <!-- Posicionados por JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA TECLADO -->
+      <div class="time-picker-view-keyboard">
+        <div class="keyboard-left-col">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="keyboard-icon-detail">
+            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+            <line x1="6" y1="8" x2="6" y2="8"></line>
+            <line x1="10" y1="8" x2="10" y2="8"></line>
+            <line x1="14" y1="8" x2="14" y2="8"></line>
+            <line x1="18" y1="8" x2="18" y2="8"></line>
+            <line x1="6" y1="12" x2="6" y2="12"></line>
+            <line x1="10" y1="12" x2="18" y2="12"></line>
+            <line x1="7" y1="16" x2="17" y2="16"></line>
+          </svg>
+          <div class="keyboard-picker-title">Establecer hora</div>
+          <div class="keyboard-picker-subtitle">Escribir hora</div>
+        </div>
+        <div class="keyboard-right-col">
+          <div class="keyboard-picker-inputs-row">
+            <div class="keyboard-input-group">
+              <input type="number" id="keyboard-input-hour" class="keyboard-time-input" min="1" max="12" placeholder="12" />
+              <span class="keyboard-input-label">hora</span>
+            </div>
+            <span class="keyboard-colon-separator">:</span>
+            <div class="keyboard-input-group">
+              <input type="number" id="keyboard-input-minute" class="keyboard-time-input" min="0" max="59" placeholder="00" />
+              <span class="keyboard-input-label">minuto</span>
+            </div>
+            <div class="keyboard-ampm-select-container">
+              <select id="keyboard-select-ampm" class="keyboard-ampm-dropdown">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIONES COMUNES (PIE DE PÁGINA) -->
+      <div class="custom-picker-actions time-picker-actions">
+        <!-- Switcher de modo (abajo a la izquierda) -->
+        <button type="button" class="btn-picker-icon-toggle" id="time-picker-mode-toggle">
+          <!-- Icono Teclado (Visible en modo reloj) -->
+          <svg class="icon-keyboard" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+            <line x1="6" y1="8" x2="6" y2="8"></line>
+            <line x1="10" y1="8" x2="10" y2="8"></line>
+            <line x1="14" y1="8" x2="14" y2="8"></line>
+            <line x1="18" y1="8" x2="18" y2="8"></line>
+            <line x1="6" y1="12" x2="6" y2="12"></line>
+            <line x1="10" y1="12" x2="18" y2="12"></line>
+            <line x1="6" y1="16" x2="18" y2="16"></line>
+          </svg>
+          <!-- Icono Reloj (Visible en modo teclado) -->
+          <svg class="icon-clock" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+
+        <div style="flex: 1;"></div>
+        
+        <button class="btn-picker-flat" id="custom-time-clear">Borrar</button>
+        <button class="btn-picker-flat" id="custom-time-cancel">Cancelar</button>
+        <button class="btn-picker-flat btn-picker-primary" id="custom-time-submit">Aceptar</button>
+      </div>
+      
+    </div>
+  </div>
+
+</body>
+
+</html>

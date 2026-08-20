@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AsistenciaApp — MEDUCA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── DARK THEME (default) ── */
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --border: #1e293b;
+      --text: #f0f4ff;
+      --muted: #64748b;
+      --header-bg: rgba(11,15,26,0.7);
+      --table-hover: rgba(255,255,255,0.02);
+      --th-bg: rgba(255,255,255,0.03);
+      --accent-blue: #3b82f6;
+      --accent-teal: #14b8a6;
+      --accent-amber: #f59e0b;
+      --docente: #3b82f6;
+      --acudiente: #14b8a6;
+      --glow-blue: rgba(59,130,246,0.25);
+      --glow-teal: rgba(20,184,166,0.25);
+      --blob-opacity: 0.18;
+      --grid-color: rgba(59,130,246,0.04);
+      --notif-bg: #1a2235;
+      --ring-track: #1e293b;
+    }
+
+    /* ── LIGHT THEME ── */
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #94a3b8;
+      --header-bg: #ffffff;
+      --table-hover: rgba(0,0,0,0.02);
+      --th-bg: rgba(0,0,0,0.03);
+      --glow-blue: transparent;
+      --glow-teal: transparent;
+      --blob-opacity: 0;
+      --grid-color: transparent;
+      --notif-bg: #ffffff;
+      --ring-track: #e2e8f0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* ── GRID BG ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── BLOBS ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: var(--blob-opacity);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 12s ease-in-out infinite alternate;
+      transition: opacity 0.3s ease;
+    }
+    .blob-1 { width: 500px; height: 500px; background: #3b82f6; top: -150px; left: -150px; animation-delay: 0s; }
+    .blob-2 { width: 400px; height: 400px; background: #14b8a6; bottom: -100px; right: -100px; animation-delay: 3s; }
+    .blob-3 { width: 300px; height: 300px; background: #6366f1; top: 40%; left: 50%; animation-delay: 6s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.05); }
+    }
+
+    /* ── WRAPPER ── */
+    .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* ── THEME TOGGLE ── */
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 44px; height: 26px;
+      background: var(--border);
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      top: 3px; left: 3px;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    [data-theme="light"] .theme-toggle::after {
+      transform: translateX(18px);
+      background: var(--accent-amber);
+    }
+    .theme-icon {
+      font-size: 0.85rem;
+      color: var(--muted);
+      transition: color 0.3s;
+      user-select: none;
+    }
+
+    /* Remove residual glow indicators if any */
+    [data-theme="light"] header { box-shadow: none; border-bottom: 1px solid var(--border); }
+    [data-theme="light"] .panel, 
+    [data-theme="light"] .screen-card, 
+    [data-theme="light"] .role-pill,
+    [data-theme="light"] .modal { box-shadow: 0 4px 12px rgba(0,0,0,0.02) !important; }
+    
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.5px; }
+    .logo-text span { color: var(--accent-teal); }
+    .badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch !important;
+      justify-content: flex-start;
+      padding: 0;
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0;
+      margin: 0 !important;
+    }
+
+    .global-header {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 70px; padding: 0 32px; background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .header-logo { display: flex; align-items: center; gap: 12px; }
+    .header-logo .icon-box {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 16px;
+    }
+    .header-logo .title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; color: #1e293b; }
+    .header-logo .title span { color: #06b6d4; }
+    
+    .header-controls { display: flex; align-items: center; gap: 12px; }
+    
+    .menu-icon {
+      width: 32px; height: 32px;
+      display: flex; flex-direction: column; justify-content: center; align-items: flex-end;
+      gap: 4px; cursor: pointer; transition: all 0.2s; padding: 4px;
+    }
+    .menu-icon span {
+      display: block; width: 18px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.2s;
+    }
+    .menu-icon span:nth-child(2) { width: 14px; }
+    .menu-icon span:last-child { width: 10px; }
+    
+    .gear-btn {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer !important; border-radius: 50%; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-size: 1.2rem;
+      z-index: 9999 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      pointer-events: auto !important;
+    }
+    .gear-btn:hover { 
+      background: var(--table-hover); 
+      transform: rotate(45deg);
+      border-color: var(--accent-blue);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+    .gear-btn svg { width: 22px; height: 22px; stroke: currentColor; }
+
+    .welcome-settings-trigger {
+      position: absolute; top: 24px; right: 24px; z-index: 100;
+    }
+    .menu-icon span:nth-child(2) { width: 16px; }
+    .menu-icon span:nth-child(3) { width: 20px; }
+    .menu-icon:hover span { background: #64748b; width: 22px; }
+    
+    .header-controls .badge {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem; font-weight: 600;
+      padding: 6px 16px; border-radius: 999px; border: 1px solid #e2e8f0;
+      color: #94a3b8; letter-spacing: 1px;
+    }
+    
+    .header-greeting {
+      font-size: 0.95rem; font-weight: 600; color: #64748b;
+      margin-left: 8px; padding-left: 12px; border-left: 1px solid #e2e8f0;
+      display: none; /* Only show on welcome/docente as needed */
+    }
+    .app-layout:not(.with-sidebar) .header-greeting { display: block; }
+
+    .app-layout {
+      display: flex;
+      width: 100%;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 280px;
+      background: #00b4d8; 
+      border-right: none;
+      display: none;
+      flex-direction: column;
+      padding: 30px 20px;
+      gap: 20px;
+      color: #ffffff;
+      box-shadow: inset -5px 0 15px rgba(0,0,0,0.05);
+    }
+    .app-layout.with-sidebar .sidebar { display: flex; }
+    .app-layout.with-sidebar main { align-items: stretch; padding: 0; background: #fdfdfd; } 
+
+    .calendar-widget {
+      background: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      color: #334155;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      margin-bottom: 30px;
+    }
+    .calendar-header { 
+      display: flex; justify-content: space-between; align-items: center; 
+      font-weight: 700; font-size: 0.85rem; margin-bottom: 16px; color: #00b4d8; 
+      padding: 0 5px;
+    }
+    .calendar-nav { cursor: pointer; color: #00b4d8; font-size: 1.1rem; padding: 0 5px; }
+    
+    .calendar-grid { 
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 2px; 
+      text-align: center; font-size: 0.7rem; color: #94a3b8; font-weight: 500;
+    }
+    .calendar-grid span { padding: 4px 0; }
+    .calendar-grid span.active { background: #00b4d8; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto; }
+    
+    .nav-group { display: flex; flex-direction: column; gap: 8px; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-radius: 8px; 
+      text-decoration: none;
+      color: rgba(255,255,255,0.9);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .nav-link:hover { background: rgba(0,0,0,0.1); color: #fff; }
+    .nav-link.active { 
+      background: #008eb3; /* Darker cyan for active pill */
+      color: #fff; 
+      font-weight: 600; 
+    }
+    .nav-icon { font-size: 1.1rem; width: 24px; text-align: center; display: inline-block; }
+
+    /* ── GRID/MATRIX ── */
+    .table-wrap {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 0; /* Remove internal padding to allow table to touch borders */
+      width: 100%;
+      overflow-x: auto; /* Handle overflow on small screens */
+    }
+    .table-tabs {
+      display: flex; gap: 15px; margin-bottom: 0; font-size: 0.85rem; font-weight: 600; color: var(--muted);
+      border-bottom: 1px solid var(--border); padding: 20px 24px; align-items: center;
+    }
+    .table-tabs span { cursor: pointer; padding: 6px 16px; border-radius: 20px; transition: all 0.2s; }
+    .table-tabs span.active { background: #00AEEF; color: #fff; }
+
+    .matrix-table { border-spacing: 0; width: 100%; border-collapse: separate; border-spacing: 0; }
+    .matrix-table thead { background: #ffffff; }
+    .matrix-table th { 
+      text-align: center; padding: 12px 10px; font-weight: 600; font-size: 0.75rem; 
+      border: none; background: #00b4d8; color: #ffffff; border-right: 1px solid rgba(255,255,255,0.1);
+      letter-spacing: 0.5px;
+    }
+    .matrix-table th:first-child { 
+      text-align: left; padding-left: 30px; background: #ffffff; color: #334155; 
+      border-right: none; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 700;
+    }
+    .matrix-table th:last-child { border-right: none; }
+    .matrix-table th small { font-weight: 400; opacity: 0.9; margin-top: 4px; display: block; font-size: 0.65rem; }
+    
+    .matrix-table tbody tr { transition: background 0.2s; background: #ffffff; }
+    .matrix-table tbody tr:nth-child(even) { background: #fdfdfd; } /* Alternating almost-white row */
+    .matrix-table tbody tr:hover { background: #f1f5f9; }
+    
+    .matrix-table td { 
+      text-align: center; padding: 14px 10px; border-bottom: 1px solid #f1f5f9; 
+      vertical-align: middle; border-right: none;
+    }
+    .matrix-table td:first-child { 
+      text-align: left; padding-left: 30px; display: flex; align-items: center; gap: 14px; 
+      border-right: none;
+    }
+
+    .student-info { display: flex; flex-direction: column; gap: 2px; }
+    .student-name { font-weight: 600; color: #334155; font-size: 0.85rem; }
+    .student-role { font-size: 0.65rem; color: #94a3b8; font-family: 'DM Mono', monospace; }
+
+    .status-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .status-dot:hover { transform: scale(1.15); }
+    .status-dot.present { background: #10b981; color: #ffffff; }
+    .status-dot.absent  { background: #fee2e2; color: #ef4444; }
+    .status-dot.late    { background: #fef3c7; color: #f59e0b; }
+
+    .search-bar {
+      width: 100%;
+      max-width: 300px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+    }
+    .search-bar::before {
+      content: '🔍';
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      opacity: 0.5;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; width: 100% !important; max-width: none !important; margin: 0 !important; animation: fadeUp 0.5s ease forwards; }
+    .screen.active { display: flex; flex-direction: column; align-items: stretch !important; }
+    .app-layout.with-sidebar .screen { align-items: stretch !important; max-width: 100% !important; margin: 0 !important; flex: 1; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── ROLE SELECT ── */
+    .intro-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent-teal);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    h1 em { font-style: normal; color: var(--accent-blue); }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+      max-width: 420px;
+      line-height: 1.6;
+      margin-bottom: 50px;
+    }
+
+    .role-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .role-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 28px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      text-align: left;
+    }
+    .role-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 20px;
+    }
+    .role-card.docente::before { background: radial-gradient(circle at 30% 30%, var(--glow-blue), transparent 70%); }
+    .role-card.acudiente::before { background: radial-gradient(circle at 30% 30%, var(--glow-teal), transparent 70%); }
+    .role-card:hover { transform: translateY(-4px); border-color: var(--accent-blue); }
+    [data-theme="light"] .role-card:hover { border-color: var(--accent-blue); }
+    .role-card:hover::before { opacity: 1; }
+    .role-card.docente:hover { box-shadow: 0 20px 60px rgba(59,130,246,0.2); }
+    .role-card.acudiente:hover { box-shadow: 0 20px 60px rgba(20,184,166,0.2); }
+
+    .card-icon {
+      font-size: 2.4rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+    .role-card.docente .card-title { color: var(--docente); }
+    .role-card.acudiente .card-title { color: var(--acudiente); }
+    .card-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .card-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.5px;
+      transition: gap 0.2s;
+    }
+    .role-card.docente .card-arrow { color: var(--docente); }
+    .role-card.acudiente .card-arrow { color: var(--acudiente); }
+    .role-card:hover .card-arrow { gap: 14px; }
+
+    /* ── DASHBOARD DOCENTE ── */
+    .dashboard-header {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .dashboard-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+    .dashboard-title span { color: var(--accent-blue); }
+    .dashboard-title.teal span { color: var(--accent-teal); }
+
+    .btn-back {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Sora', sans-serif;
+      font-size: 0.8rem;
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-back:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── GRID PANELS ── */
+    .panels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    @media(max-width: 640px) { .panels { grid-template-columns: 1fr; } .role-cards { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+    .panel:hover { border-color: rgba(255,255,255,0.1); }
+    .panel-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .panel-value {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+    .panel-value.blue { color: var(--accent-blue); }
+    .panel-value.teal { color: var(--accent-teal); }
+    .panel-value.amber { color: var(--accent-amber); }
+    .panel-sub { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── TABS & SEARCH CONTAINER ── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px 16px 0 0;
+      border-bottom: none;
+    }
+    .filter-tabs { display: flex; gap: 10px; align-items: center; }
+    .filter-tab {
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #94a3b8;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: all 0.2s;
+    }
+    .filter-tab:hover { color: #64748b; }
+    .filter-tab.active { background: #00b4d8; color: #ffffff; }
+
+    .filter-search {
+      position: relative;
+    }
+    .filter-search input {
+      padding: 10px 16px 10px 44px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      width: 250px;
+      color: #334155;
+      transition: border-color 0.2s;
+    }
+    .filter-search input:focus { border-color: #00b4d8; }
+    .filter-search::before {
+      content: '🔍';
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      opacity: 0.5;
+      z-index: 1;
+    }
+    .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--muted); }
+    .tb-dropdown {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── ATTENDANCE TABLE ── */
+    .table-wrap {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    
+    /* Custom Scrollbar for the table */
+    .table-wrap::-webkit-scrollbar { height: 8px; }
+    .table-wrap::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 0 0 16px 16px; }
+    .table-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .table-wrap::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-title { font-size: 0.9rem; font-weight: 600; }
+    .btn-primary {
+      background: var(--accent-blue);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-primary.teal { background: var(--accent-teal); }
+    .btn-primary:hover { opacity: 0.85; }
+
+    table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    thead {
+      border-bottom: 2px solid #00b4d8;
+    }
+    th {
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #00b4d8;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    th:first-child { 
+      text-align: left; 
+      font-size: 0.75rem; 
+      letter-spacing: 2px; 
+      color: #94a3b8; 
+      text-transform: uppercase; 
+      font-family: 'DM Mono', monospace; 
+      width: 300px;
+    }
+    th span.date {
+      display: block;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      font-weight: 500;
+      margin-top: 4px;
+      font-family: 'DM Mono', monospace;
+    }
+    
+    td {
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      transition: background 0.2s;
+    }
+    td:first-child { text-align: left; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(0,0,0,0.01); }
+
+    .avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 600;
+      font-family: 'DM Mono', monospace;
+    }
+    .pill.present  { background: rgba(20,184,166,0.15); color: var(--accent-teal); }
+    .pill.absent   { background: rgba(239,68,68,0.15);  color: #f87171; }
+    .pill.late     { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+
+    .toggle-btn {
+      background: none; border: 1px solid var(--border);
+      border-radius: 8px; padding: 5px 10px;
+      color: var(--muted); font-size: 0.72rem;
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'DM Mono', monospace;
+    }
+    .toggle-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    /* ── ACUDIENTE VIEW ── */
+    .progress-ring { position: relative; width: 100px; height: 100px; margin: 0 auto 16px; }
+    .progress-ring svg { transform: rotate(-90deg); }
+    .progress-ring-text {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.3rem; color: var(--accent-teal);
+      line-height: 1.1;
+    }
+    .progress-ring-text small { font-size: 0.55rem; color: var(--muted); font-weight: 400; letter-spacing: 1px; text-transform: uppercase; }
+
+    .timeline { width: 100%; display: flex; flex-direction: column; gap: 2px; }
+    .timeline-item {
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      transition: background 0.2s;
+    }
+    .timeline-item:hover { background: rgba(255,255,255,0.03); }
+    .timeline-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .timeline-dot.p, .timeline-dot.present { background: var(--accent-teal); }
+    .timeline-dot.a, .timeline-dot.absent { background: #f87171; }
+    .timeline-dot.l, .timeline-dot.late { background: var(--accent-amber); }
+    .timeline-date { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.72rem; min-width: 100px; }
+    .timeline-class { flex: 1; }
+    .timeline-status { font-size: 0.72rem; font-weight: 600; }
+    .timeline-status.p, .timeline-status.present { color: var(--accent-teal); }
+    .timeline-status.a, .timeline-status.absent { color: #f87171; }
+    .timeline-status.l, .timeline-status.late { color: var(--accent-amber); }
+
+    .panel, .table-wrap, .modal, .btn-back, .toggle-btn, .input-field, footer {
+      transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* ── VIEW SELECTOR (Parent) ── */
+    .view-selector {
+      display: flex;
+      background: rgba(0,0,0,0.05);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 20px;
+      width: fit-content;
+    }
+    .view-btn {
+      padding: 8px 20px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .view-btn.active {
+      background: var(--accent-blue);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+    [data-theme="light"] .view-selector { background: #f1f5f9; }
+    [data-theme="light"] .view-btn.active { background: #3b82f6; }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.5px;
+    }
+    footer span { color: var(--accent-teal); }
+
+    /* ── MODAL OVERLAY ── */
+    .overlay {
+      display: none; position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .overlay.active { display: flex; align-items: center; justify-content: center; }
+    .overlay.closing { animation: bgFadeOut 0.3s ease forwards; }
+
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px; width: 90%; max-width: 420px;
+      animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .modal.closing { animation: fadeDownOut 0.3s ease forwards; }
+
+    [data-theme="light"] .overlay .modal {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15) !important;
+    }
+    /* Confirm modal: always centered, white in light */
+    .confirm-modal {
+      max-width: 360px;
+      text-align: center;
+      padding: 32px 28px;
+      border-radius: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+      animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .confirm-modal.closing { animation: fadeDownOut 0.3s ease forwards; }
+    [data-theme="light"] .confirm-modal {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.12) !important;
+    }
+    .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .modal p { color: var(--muted); font-size: 0.82rem; margin-bottom: 24px; line-height: 1.6; }
+    .input-field {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px;
+      color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.9rem;
+      margin-bottom: 14px; outline: none; transition: border-color 0.2s;
+      letter-spacing: 2px;
+    }
+    .input-field:focus { border-color: var(--accent-teal); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-ghost {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 999px; padding: 8px 18px; font-family: 'Sora', sans-serif;
+      font-size: 0.78rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    .notification {
+      position: fixed; bottom: 24px; right: 24px; z-index: 300;
+      background: var(--notif-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 20px; max-width: 300px;
+      font-size: 0.82rem; display: none;
+      animation: slideIn 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    .notification.show { display: block; }
+    .notification .n-title { font-weight: 600; margin-bottom: 4px; }
+    .notification .n-msg { color: var(--muted); font-size: 0.76rem; }
+    @keyframes slideIn { from { transform: translateX(40px); opacity:0; } to { opacity:1; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes fadeDownOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(10px) scale(0.98); }
+    }
+    @keyframes bgFadeOut {
+      from { opacity: 1; } to { opacity: 0; }
+    }
+    @keyframes notificationFadeOut {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(20px); }
+    }
+
+    /* ── TIME TOGGLE GROUP ── */
+    .time-toggle-group {
+      display: flex;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+    .time-toggle-item {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Sora', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* ── CHOICE MENU ── */
+    .choice-menu {
+      display: none; position: fixed; z-index: 5000;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      padding: 8px; min-width: 140px;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .choice-option {
+      padding: 10px 14px; border-radius: 6px;
+      cursor: pointer; display: flex; align-items: center; gap: 10px;
+      font-size: 0.82rem; transition: background 0.2s;
+    }
+    .choice-option:hover { background: var(--table-hover); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+    <!-- GLOBAL HEADER (AsistenciaApp) -->
+    <header class="global-header">
+      <div class="header-logo">
+        <div class="icon-box">📋</div>
+        <div class="title">Asistencia<span>App</span> <span class="header-greeting" id="header-greeting">| Buenas noches</span></div>
+      </div>
+      <div class="header-controls">
+        <!-- Icono de Menú (3 rallitas negras) para Interior -->
+        <div id="header-menu-icon" class="gear-btn" onclick="openSettingsModal()" title="Configuración" style="display: none; cursor: pointer; padding: 8px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </div>
+        <!-- Icono de Tuerquita para Bienvenida -->
+        <div id="header-gear-icon" class="gear-btn" onclick="openSettingsModal()" title="Configuración" style="display: flex;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2 2 2 0 0 1-2 2 2 2 0 0 0-2 2 2 2 0 0 1-2 2 2 2 0 0 0-2 2v.44a2 2 0 0 0 2 2 2 2 0 0 1 2 2 2 2 0 0 0 2 2 2 2 0 0 1 2 2 2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 0 2-2 2 2 0 0 1 2-2 2 2 0 0 0 2-2v-.44a2 2 0 0 0-2-2 2 2 0 0 1-2-2 2 2 0 0 0-2-2 2 2 0 0 1-2-2 2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+        
+        <div class="badge">V0.1 - MEDUCA</div>
+      </div>
+    </header>
+
+    <!-- MAIN WRAPPER -->
+    <div class="app-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <!-- CALENDAR WIDGET MATCHING IMAGE -->
+        <div class="calendar-widget">
+          <div class="calendar-header">
+            <span class="calendar-nav" onclick="changeMonth(-1)">&lt;</span>
+            <span id="calendar-month-year">Noviembre 2026</span>
+            <span class="calendar-nav" onclick="changeMonth(1)">&gt;</span>
+          </div>
+          <div class="calendar-grid" id="calendar-grid">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a class="nav-link" onclick="setActiveNav(this); goTo('screen-docente')">
+             <span class="nav-icon"><img src="https://api.iconify.design/flat-color-icons:bar-chart.svg" style="width:18px;height:18px;"></span> Dashboard
+          </a>
+          <a class="nav-link" onclick="setActiveNav(this); showNotif('En desarrollo', 'El módulo de alumnos estará disponible pronto.')">
+             <span class="nav-icon"><img src="https://api.iconify.design/flat-color-icons:multiple-users.svg" style="width:18px;height:18px;"></span> Alumnos
+          </a>
+          <a class="nav-link active" onclick="setActiveNav(this); goTo('screen-docente')">
+             <span class="nav-icon"><img src="https://api.iconify.design/flat-color-icons:calendar.svg" style="width:18px;height:18px;"></span> Asistencia
+          </a>
+          <a class="nav-link" onclick="setActiveNav(this); showNotif('En desarrollo', 'El módulo de clases estará disponible pronto.')">
+             <span class="nav-icon"><img src="https://api.iconify.design/flat-color-icons:folder.svg" style="width:18px;height:18px;"></span> Clases
+          </a>
+          <a class="nav-link" onclick="setActiveNav(this); showNotif('En desarrollo', 'El módulo de reportes estará disponible pronto.')">
+             <span class="nav-icon"><img src="https://api.iconify.design/flat-color-icons:opened-folder.svg" style="width:18px;height:18px;"></span> Reportes
+          </a>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main>
+
+        <!-- SCREEN: ROLE SELECT -->
+        <div class="screen active" id="screen-role">
+          <div class="intro-label">Bienvenido al sistema</div>
+          <h1>¿Cómo deseas<br><em>ingresar hoy?</em></h1>
+          <p class="subtitle">Selecciona tu perfil para acceder a las funciones correspondientes del sistema de asistencia.</p>
+
+          <div class="role-cards">
+            <div class="role-card docente" onclick="goTo('screen-docente')">
+              <span class="card-icon">👨‍🏫</span>
+              <div class="card-title">Soy Docente</div>
+              <div class="card-desc">Registra la asistencia de tus alumnos, gestiona listas de clases y sincroniza con MEDUCA.</div>
+              <span class="card-arrow">Ingresar →</span>
+            </div>
+            <div class="role-card acudiente" onclick="openCodeModal()">
+              <span class="card-icon">👨‍👧</span>
+              <div class="card-title">Soy Acudiente / Tutor</div>
+              <div class="card-desc">Consulta la asistencia, notas y tareas de tu hijo/a en tiempo real con tu código único.</div>
+              <span class="card-arrow">Ingresar →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN: DOCENTE DASHBOARD -->
+        <div class="screen" id="screen-docente" style="padding-top: 24px;">
+          
+          <div class="table-wrap" style="background: transparent;">
+            <div class="filter-bar">
+              <div class="filter-tabs">
+                <span class="filter-tab active" onclick="setActiveTab(this)">General</span>
+                <span class="filter-tab" onclick="setActiveTab(this)">Ene</span>
+                <span class="filter-tab" onclick="setActiveTab(this)">Feb</span>
+                <span class="filter-tab" onclick="setActiveTab(this)">Mar</span>
+                <span class="filter-tab" onclick="setActiveTab(this)">Abr</span>
+                <span class="filter-tab" onclick="setActiveTab(this)">May</span>
+              </div>
+              <div class="filter-search" style="display: flex; align-items: center;">
+                <span id="current-week-label" style="font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 700; color: #94a3b8; letter-spacing: 2px;">SEMANA 42</span>
+              </div>
+            </div>
+
+          <!-- TABLE EXACT REPLICA -->
+          <div class="table-wrap">
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th style="padding: 10px 24px;">
+                    <div class="filter-search" style="margin-bottom: 0;">
+                      <input type="text" placeholder="Buscar estudiante..." oninput="filterStudents(this.value)" style="width: 100%;" />
+                    </div>
+                  </th>
+                  <th>LUN<span class="date">10 MAR - 8:00</span></th>
+                  <th>MAR<span class="date">11 MAR - 8:00</span></th>
+                  <th>MIÉ<span class="date">12 MAR - 8:00</span></th>
+                  <th>JUE<span class="date">13 MAR - 8:00</span></th>
+                  <th>VIE<span class="date">14 MAR - 8:00</span></th>
+                </tr>
+              </thead>
+              <tbody id="student-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+      <!-- SCREEN: ACUDIENTE DASHBOARD -->
+      <div class="screen" id="screen-acudiente">
+        <div class="dashboard-header" style="width:100%">
+          <div>
+            <div class="intro-label">Panel Acudiente</div>
+            <div class="dashboard-title teal">Seguimiento de <span>Ariana García</span></div>
+          </div>
+          <button class="btn-back" onclick="goTo('screen-role')">← Cambiar perfil</button>
+        </div>
+
+        <div class="panels">
+          <div class="panel" style="text-align:center;">
+            <div class="progress-ring">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ring-track)" stroke-width="8"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#14b8a6" stroke-width="8"
+                  stroke-dasharray="251.2" stroke-dashoffset="37.68" stroke-linecap="round"/>
+              </svg>
+              <div class="progress-ring-text">85%<small>Asist.</small></div>
+            </div>
+            <div class="panel-sub">17 de 20 clases</div>
+          </div>
+          <div class="panel">
+            <div class="panel-label">Tareas Entregadas</div>
+            <div class="panel-value teal">12/14</div>
+            <div class="panel-sub">2 pendientes esta semana</div>
+          </div>
+          <div class="panel">
+            <div class="panel-label">Último Acceso</div>
+            <div class="panel-value" style="font-size:1.2rem; margin-top:4px;">Hoy</div>
+            <div class="panel-sub">Registrado a las 7:48 AM</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-head" style="margin-bottom: 24px;">
+            <span class="table-title">Reporte de Asistencia</span>
+            <div class="view-selector">
+              <button class="view-btn active" onclick="setStudentView('semana', this)">Semana</button>
+              <button class="view-btn" onclick="setStudentView('mes', this)">Mes</button>
+              <button class="view-btn" onclick="setStudentView('trimestre', this)">Trimestre</button>
+            </div>
+            <button class="btn-primary teal" onclick="showNotif('📬 Solicitud enviada', 'Se notificó al docente sobre tu consulta.')">Contactar Docente</button>
+          </div>
+          
+          <div class="table-wrap" style="background: transparent; padding: 0; box-shadow: none;">
+            <table class="matrix-table student-view">
+              <thead id="student-matrix-head"></thead>
+              <tbody id="student-matrix-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+    </main>
+
+  </div>
+
+  <footer>
+    AsistenciaApp &nbsp;·&nbsp; Desarrollado para <span>MEDUCA</span> &nbsp;·&nbsp; v0.1 prototipo
+  </footer>
+
+  <!-- MODAL: CÓDIGO ACUDIENTE -->
+  <div class="overlay" id="modal-overlay" onclick="closeModal(event, 'modal-overlay')">
+    <div class="modal">
+      <h3>🔐 Acceso Acudiente</h3>
+      <p>Ingresa el código único de 6 dígitos asignado al estudiante para acceder a su información de asistencia.</p>
+      <input class="input-field" id="code-input" type="text" maxlength="8" placeholder="A-12345" oninput="this.value=this.value.toUpperCase()"/>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeModalDirect('modal-overlay')">Cancelar</button>
+        <button class="btn-primary teal" onclick="verifyCode()">Verificar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIGURACIÓN (Image 1 Replica) -->
+  <div class="overlay" id="modal-settings" onclick="closeModal(event, 'modal-settings')">
+    <div class="modal" style="max-width: 480px; padding: 0; overflow: hidden; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border);">
+      <div style="padding: 24px 32px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text); margin: 0;">Configuración</h2>
+        <button onclick="closeModalDirect('modal-settings')" style="background: none; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; padding: 2px 6px; color: var(--muted);">✕</button>
+      </div>
+      <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px; max-height: 70vh; overflow-y: auto;">
+        
+        <!-- IDIOMA -->
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <span style="font-size: 1.2rem;">📲</span>
+            <span style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text);">Idioma de Interfaz</span>
+          </div>
+          <div style="padding-left: 36px;">
+            <div style="font-size: 1.1rem; font-weight: 600; color: var(--text);">Español</div>
+          </div>
+        </div>
+
+        <!-- APARIENCIA -->
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <span style="font-size: 1.2rem;">☀️</span>
+            <span style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text);">Apariencia / Tema</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding-left: 36px;">
+            <button onclick="setAppTheme('light')" class="theme-btn" id="btn-theme-light" style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; border-radius: 16px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; transition: all 0.2s;">
+              <span style="font-size: 1.2rem;">☀️</span>
+              <span style="font-size: 0.8rem; font-weight: 600;">Claro</span>
+            </button>
+            <button onclick="setAppTheme('dark')" class="theme-btn" id="btn-theme-dark" style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; border-radius: 16px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; transition: all 0.2s;">
+              <span style="font-size: 1.2rem;">🌙</span>
+              <span style="font-size: 0.8rem; font-weight: 600;">Oscuro</span>
+            </button>
+            <button onclick="setAppTheme('auto')" class="theme-btn" id="btn-theme-auto" style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; border-radius: 16px; border: 1.5px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; transition: all 0.2s;">
+              <span style="font-size: 1.2rem;">💻</span>
+              <span style="font-size: 0.8rem; font-weight: 600;">Auto</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- DATOS Y BACKUP -->
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <span style="font-size: 1.2rem;">📥</span>
+            <span style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text);">Datos y Backup</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px; padding-left: 36px;">
+            <button onclick="showNotif('Exportando...', 'Generando archivo JSON de respaldo.')" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent-blue); color: white; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+              <span>📤</span> Exportar JSON
+            </button>
+            <button onclick="showNotif('Importar', 'Selecciona el archivo JSON para restaurar.')" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: transparent; color: var(--text); font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1.5px solid var(--border);">
+              <span>📥</span> Importar JSON
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION TOAST -->
+  <div class="notification" id="notif">
+    <div class="n-title" id="notif-title"></div>
+    <div class="n-msg" id="notif-msg"></div>
+  </div>
+
+  <!-- ATTENDANCE CHOICE MENU -->
+  <div id="attendance-choice-menu" class="choice-menu">
+    <div class="choice-option" onclick="setAttendance('present')">
+      <span class="status-dot present" style="width:16px; height:16px;">✓</span> Presente
+    </div>
+    <div class="choice-option" onclick="setAttendance('late')">
+      <span class="status-dot late" style="width:16px; height:16px;">-</span> Tardanza
+    </div>
+    <div class="choice-option" onclick="setAttendance('absent')">
+      <span class="status-dot absent" style="width:16px; height:16px;">✕</span> Falta
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL (Eliminar Clase / Limpiar Horarios) -->
+  <div class="overlay" id="m-confirm-overlay">
+    <div class="confirm-modal">
+      <div style="font-size: 2.5rem; margin-bottom: 16px;">⚠️</div>
+      <h3 id="m-confirm-title" style="font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; color: var(--text);">¿Estás seguro?</h3>
+      <p id="m-confirm-msg" style="color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px;">Esta acción no se puede deshacer.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <button onclick="closeMobileConfirm()" style="padding: 14px; border-radius: 14px; border: 1.5px solid var(--border); background: transparent; color: var(--muted); font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: 'Sora', sans-serif;">Cancelar</button>
+        <button id="m-confirm-ok" onclick="executeMobileConfirm()" style="padding: 14px; border-radius: 14px; border: none; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: 'Sora', sans-serif;">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── THEME TOGGLE ──
+    function setAppTheme(theme) {
+      const html = document.documentElement;
+      if (theme === 'auto') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        html.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      } else {
+        html.setAttribute('data-theme', theme);
+      }
+      
+      // Update UI buttons in settings
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.style.borderColor = '#e2e8f0';
+        btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById(`btn-theme-${theme}`);
+      if (activeBtn) {
+        activeBtn.style.borderColor = '#3b82f6';
+        activeBtn.classList.add('active');
+      }
+      
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      setAppTheme(current === 'light' ? 'dark' : 'light');
+    }
+
+    // Load saved theme
+    (function() {
+      const saved = localStorage.getItem('theme') || 'light';
+      setAppTheme(saved);
+    })();
+
+    // ── ANIMATION HELPERS ──
+    window.closeOverlay = function(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('closing');
+      const inner = el.querySelector('.modal, .confirm-modal, .calendar-modal-card');
+      if (inner) inner.classList.add('closing');
+      
+      setTimeout(() => {
+        el.classList.remove('active', 'closing');
+        if (inner) inner.classList.remove('closing');
+        if (id === 'calendar-modal-overlay' || id === 'attendance-choice-menu') el.style.display = 'none';
+      }, 300);
+    };
+
+    // ── TIME FORMAT (Mobile) ──
+    let mTimeFormat = localStorage.getItem('asistencia_time_format') || '12h';
+    function setMobileTimeFormat(fmt) {
+      mTimeFormat = fmt;
+      localStorage.setItem('asistencia_time_format', fmt);
+      document.querySelectorAll('.time-toggle-item').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`m-time-format-${fmt}`);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+    // Init time format UI
+    (function() { setMobileTimeFormat(mTimeFormat); })();
+
+    // ── MOBILE CONFIRM MODAL ──
+    let mConfirmCallback = null;
+    function showMobileConfirm(title, msg, onConfirm) {
+      document.getElementById('m-confirm-title').textContent = title;
+      document.getElementById('m-confirm-msg').textContent = msg;
+      mConfirmCallback = onConfirm;
+      document.getElementById('m-confirm-overlay').classList.add('active');
+    }
+    function executeMobileConfirm() {
+      if (mConfirmCallback) mConfirmCallback();
+      closeMobileConfirm();
+    }
+    function closeMobileConfirm() {
+      window.closeOverlay('m-confirm-overlay');
+      mConfirmCallback = null;
+    }
+
+    // ── DATA & PERSISTENCE ──
+    const defaultStudents = [
+      { name: 'Ariana García',   initials: 'AG', color: '#3b82f6', history: {} },
+      { name: 'Luis Martínez',   initials: 'LM', color: '#8b5cf6', history: {} },
+      { name: 'Sofía Ramos',     initials: 'SR', color: '#14b8a6', history: {} },
+      { name: 'Carlos Herrera',  initials: 'CH', color: '#f59e0b', history: {} },
+      { name: 'Valentina López', initials: 'VL', color: '#ec4899', history: {} },
+      { name: 'Diego Castillo',  initials: 'DC', color: '#10b981', history: {} },
+    ];
+
+    let students = JSON.parse(localStorage.getItem('asistencia_students')) || defaultStudents;
+    let currentFilteredMonth = 'General'; // Default tab
+    let currentStudentView = 'semana'; // Default parent view
+
+    function saveToLocal() {
+      localStorage.setItem('asistencia_students', JSON.stringify(students));
+    }
+
+    const statusLabel = { present:'Presente', absent:'Falta', late:'Tardanza', p:'Presente', a:'Falta', l:'Tardanza' };
+
+    // ── DYNAMIC WEEK ──
+    function updateWeekNumber() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 1);
+      const diff = now - start + (start.getTimezoneOffset() - now.getTimezoneOffset()) * 60000;
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      const weekNum = Math.ceil((dayOfYear + start.getDay() + 1) / 7);
+      const label = document.getElementById('current-week-label');
+      if (label) label.textContent = `SEMANA ${weekNum}`;
+    }
+
+    // ── RENDER TABLE ──
+    function renderTable(filter = '') {
+      const tbody = document.getElementById('student-table');
+      const monthKey = currentFilteredMonth === 'General' ? 'Mar' : currentFilteredMonth; // Demo fallback
+
+      tbody.innerHTML = students.map((s, sIdx) => {
+        if (filter && !s.name.toLowerCase().includes(filter.toLowerCase())) return null;
+        
+        // Ensure student has history for this month
+        if (!s.history[monthKey]) {
+          s.history[monthKey] = ['present', 'present', 'present', 'present', 'present'];
+        }
+
+        return `
+          <tr>
+            <td>
+              <img src="https://api.dicebear.com/7.x/notionists/svg?seed=${s.name}" alt="Avatar" class="avatar" style="width: 36px; height: 36px; border-radius: 50%; opacity: 0.9; background: #e2e8f0;">
+              <div class="student-info">
+                <span class="student-name">${s.name}</span>
+                <span class="student-role">ID: 10${sIdx + 1}-P</span>
+              </div>
+            </td>
+            ${s.history[monthKey].map((status, dIdx) => {
+              let iconHTML = '';
+              if (status === 'present') {
+                iconHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+              } else if (status === 'absent') {
+                iconHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+              } else if (status === 'late') {
+                iconHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+              }
+              return `
+              <td>
+                <span class="status-dot ${status}" ondblclick="openAttendanceMenu(event, ${sIdx}, ${dIdx}, '${monthKey}')">${iconHTML}</span>
+              </td>
+              `;
+            }).join('')}
+          </tr>
+        `;
+      }).filter(row => row !== null).join('');
+    }
+
+    // ── CHOICE MENU LOGIC ──
+    let activeSelection = { sIdx: -1, dIdx: -1, mKey: '' };
+
+    function openAttendanceMenu(event, sIdx, dIdx, mKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      activeSelection = { sIdx, dIdx, mKey };
+      const menu = document.getElementById('attendance-choice-menu');
+      menu.style.display = 'block';
+      menu.style.left = `${event.clientX}px`;
+      menu.style.top = `${event.clientY}px`;
+      
+      // Prevent the menu itself from triggering the outside-click handler
+      menu.onclick = (e) => e.stopPropagation();
+      
+      // Close menu on click outside (using document listener, not window.onclick)
+      function closeMenuOnOutsideClick() {
+        menu.style.display = 'none';
+        document.removeEventListener('click', closeMenuOnOutsideClick, true);
+      }
+      setTimeout(() => {
+        document.addEventListener('click', closeMenuOnOutsideClick, true);
+      }, 10);
+    }
+
+    function setAttendance(status) {
+      const { sIdx, dIdx, mKey } = activeSelection;
+      if (sIdx === -1) return;
+      
+      students[sIdx].history[mKey][dIdx] = status;
+      saveToLocal();
+      renderTable();
+      renderStudentMatrix(); // Actualiza el reporte del acudiente en tiempo real
+      showNotif('Registro actualizado', `${students[sIdx].name} → ${statusLabel[status]}`);
+      window.closeOverlay('attendance-choice-menu');
+    }
+
+    function renderStudentMatrix() {
+      const head = document.getElementById('student-matrix-head');
+      const body = document.getElementById('student-matrix-body');
+      if (!head || !body) return;
+
+      const student = students.find(s => s.name === "Ariana García") || students[0];
+      if (!student) return;
+
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const monthKey = `${monthNames[currentMonth]} ${currentYear}`;
+      const history = student.history[monthKey] || [];
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+      let headHtml = '<tr><th style="background:var(--surface); color:var(--text); text-align:left; padding-left:24px;">Fecha</th>';
+      let bodyHtml = '<tr><td style="text-align:left; padding-left:24px; font-weight:700;">Estado</td>';
+
+      if (currentStudentView === 'semana') {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); 
+        const diffToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + diffToMonday);
+
+        for (let i = 0; i < 5; i++) {
+          const d = new Date(monday);
+          d.setDate(monday.getDate() + i);
+          const dayNum = d.getDate();
+          const status = history[dayNum - 1] || 'empty';
+          const dayName = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d.getDay()];
+          
+          headHtml += `<th>${dayName}<br><small>${dayNum}</small></th>`;
+          bodyHtml += `<td><div class="status-dot ${status}">${status === 'present' ? '✓' : status === 'absent' ? '✕' : status === 'late' ? '!' : ''}</div></td>`;
+        }
+      } else if (currentStudentView === 'mes') {
+        for (let i = 1; i <= daysInMonth; i++) {
+          const status = history[i - 1] || 'empty';
+          headHtml += `<th>${i}</th>`;
+          bodyHtml += `<td><div class="status-dot ${status}"></div></td>`;
+        }
+      } else {
+        headHtml += '<th>P (%)</th><th>L (%)</th><th>A (%)</th><th>Total</th></tr>';
+        
+        let p = 0, l = 0, a = 0, total = 0;
+        Object.values(student.history).forEach(entries => {
+          entries.forEach(s => {
+            if (s === 'present') p++;
+            else if (s === 'late') l++;
+            else if (s === 'absent') a++;
+            if (s !== 'empty') total++;
+          });
+        });
+
+        const pPerc = total > 0 ? Math.round((p / total) * 100) : 0;
+        const lPerc = total > 0 ? Math.round((l / total) * 100) : 0;
+        const aPerc = total > 0 ? Math.round((a / total) * 100) : 0;
+
+        bodyHtml += `<td><span style="color:var(--accent-teal); font-weight:800;">${pPerc}%</span></td>
+                     <td><span style="color:var(--accent-amber); font-weight:800;">${lPerc}%</span></td>
+                     <td><span style="color:#ef4444; font-weight:800;">${aPerc}%</span></td>
+                     <td>${total}</td></tr>`;
+      }
+
+      head.innerHTML = headHtml + '</tr>';
+      body.innerHTML = bodyHtml + '</tr>';
+    }
+
+    function filterStudents(val) {
+      renderTable(val);
+    }
+
+    function setStudentView(view, el) {
+      currentStudentView = view;
+      document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+      if (el) el.classList.add('active');
+      renderStudentMatrix();
+    }
+
+    function getIconForStatus(status) {
+      if (status === 'present') return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      if (status === 'absent') return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+      if (status === 'late') return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+      return '';
+    }
+
+    // ── NAVIGATION ──
+    let navigationHistory = ['screen-role'];
+    function goTo(id) {
+      if (navigationHistory[navigationHistory.length - 1] !== id) {
+        navigationHistory.push(id);
+      }
+      
+      const app = document.querySelector('.app-layout');
+      const greeting = document.getElementById('header-greeting');
+      const headerMenu = document.getElementById('header-menu-icon');
+      const headerGear = document.getElementById('header-gear-icon');
+      
+      const sidebar = document.querySelector('.sidebar');
+      if (id === 'screen-docente') {
+        app.classList.add('with-sidebar');
+        if (sidebar) sidebar.style.display = 'flex';
+        if (greeting) greeting.style.display = 'none';
+        if (headerMenu) headerMenu.style.display = 'flex';
+        if (headerGear) headerGear.style.display = 'none';
+      } else if (id === 'screen-role') {
+        app.classList.remove('with-sidebar');
+        if (sidebar) sidebar.style.display = 'none';
+        if (greeting) greeting.style.display = 'block';
+        if (headerMenu) headerMenu.style.display = 'none';
+        if (headerGear) headerGear.style.display = 'flex';
+      } else {
+        app.classList.remove('with-sidebar');
+        if (sidebar) sidebar.style.display = 'none';
+        if (greeting) greeting.style.display = 'none';
+        if (headerMenu) headerMenu.style.display = 'none';
+        if (headerGear) headerGear.style.display = 'none';
+      }
+
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(id);
+      if (target) {
+        target.classList.add('active');
+        target.style.animation = 'none';
+        target.offsetHeight;
+        target.style.animation = '';
+      }
+      
+      updateGreeting();
+    }
+
+    function updateGreeting() {
+      const greetingEl = document.getElementById('header-greeting');
+      if (!greetingEl) return;
+      
+      const hour = new Date().getHours();
+      let text = 'Buenas noches';
+      if (hour >= 5 && hour < 12) text = 'Buenos días';
+      else if (hour >= 12 && hour < 18) text = 'Buenas tardes';
+      
+      greetingEl.textContent = `| ${text}`;
+    }
+
+    function goBack() {
+      if (navigationHistory.length > 1) {
+        navigationHistory.pop();
+        const prevId = navigationHistory[navigationHistory.length - 1];
+        goTo(prevId);
+      } else {
+        goTo('screen-role');
+      }
+    }
+
+    // ── SETTINGS MODAL ──
+    function openSettingsModal() {
+      console.log('Abriendo configuración...');
+      const modal = document.getElementById('modal-settings');
+      if (modal) {
+        modal.classList.add('active');
+      } else {
+        console.error('Error: No se encontró el modal de configuración.');
+      }
+    }
+
+    // ── MODAL ──
+    function openCodeModal() {
+      document.getElementById('modal-overlay').classList.add('active');
+      setTimeout(() => document.getElementById('code-input').focus(), 200);
+    }
+    function closeModal(e, id) {
+      if (e.target === document.getElementById(id)) closeModalDirect(id);
+    }
+    function closeModalDirect(id) {
+      window.closeOverlay(id);
+      if (id === 'modal-overlay') {
+        const codeInput = document.getElementById('code-input');
+        if (codeInput) codeInput.value = '';
+      }
+    }
+    function verifyCode() {
+      const val = document.getElementById('code-input').value.trim();
+      if (val.length >= 4) {
+        closeModalDirect();
+        renderStudentMatrix();
+        goTo('screen-acudiente');
+        showNotif('✅ Acceso concedido', 'Bienvenido/a. Mostrando datos de Ariana García.');
+      } else {
+        document.getElementById('code-input').style.borderColor = '#f87171';
+        setTimeout(() => document.getElementById('code-input').style.borderColor = '', 800);
+        showNotif('❌ Código inválido', 'Ingresa un código de al menos 4 caracteres.');
+      }
+    }
+
+    // ── NOTIFICATION ──
+    let notifTimer;
+    function showNotif(title, msg) {
+      const el = document.getElementById('notif');
+      document.getElementById('notif-title').textContent = title;
+      document.getElementById('notif-msg').textContent = msg;
+      el.classList.add('show');
+      el.classList.remove('closing');
+      clearTimeout(notifTimer);
+      notifTimer = setTimeout(() => {
+        el.classList.add('closing');
+        setTimeout(() => el.classList.remove('show', 'closing'), 400);
+      }, 3500);
+    }
+
+    // ── INTERACTIVITY CONTROLS ──
+    function setActiveNav(el) {
+      document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+      el.classList.add('active');
+    }
+        function setActiveTab(el) {
+       document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+       el.classList.add('active');
+       currentFilteredMonth = el.textContent.trim();
+       renderTable();
+       showNotif('Filtro aplicado', `Mostrando datos de ${currentFilteredMonth}`);
+     }
+
+    // ── CALENDAR LOGIC ──
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let selectedDay = today.getDate();
+    let selectedMonth = currentMonth;
+    let selectedYear = currentYear;
+
+    function renderCalendar() {
+      document.getElementById('calendar-month-year').textContent = `${months[currentMonth]} ${currentYear}`;
+      const grid = document.getElementById('calendar-grid');
+      
+      let html = '<span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>';
+      
+      // Get the true first day of the month
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      
+      // empty slots
+      for (let i = 0; i < firstDay; i++) {
+        html += '<span></span>';
+      }
+      
+      for (let d = 1; d <= daysInMonth; d++) {
+        const isSelected = (d === selectedDay && currentMonth === selectedMonth && currentYear === selectedYear) ? 'class="active"' : '';
+        html += `<span ${isSelected} style="cursor:pointer;" onclick="selectDay(${d}, this)">${d}</span>`;
+      }
+      grid.innerHTML = html;
+    }
+
+    function changeMonth(dir) {
+      currentMonth += dir;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      renderCalendar();
+    }
+
+    function selectDay(d, el) {
+      // Don't select empty spans
+      if (!d) return;
+      document.querySelectorAll('.calendar-grid span').forEach(span => span.classList.remove('active'));
+      el.classList.add('active');
+      selectedDay = d;
+      selectedMonth = currentMonth;
+      selectedYear = currentYear;
+      showNotif('Fecha seleccionada', `Viendo datos del ${d} de ${months[currentMonth]} ${currentYear}`);
+    }
+
+     // ── INIT ──
+     updateWeekNumber();
+     renderTable();
+     renderCalendar();
+     updateGreeting();
+   </script>
+</body>
+</html>
