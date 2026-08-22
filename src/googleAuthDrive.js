@@ -71,10 +71,16 @@ async function initTokenClient() {
       client_id: GOOGLE_CLIENT_ID,
       scope: GOOGLE_SCOPES,
       callback: async (tokenResponse) => {
+        console.log('[GoogleAuth] Token callback received:', JSON.stringify({
+          hasToken: !!tokenResponse?.access_token,
+          error: tokenResponse?.error || null,
+          errorDescription: tokenResponse?.error_description || null
+        }));
+
         if (tokenResponse.error) {
-          console.error('[GoogleAuth] Error en respuesta de token:', tokenResponse);
+          console.error('[GoogleAuth] OAuth error in callback:', tokenResponse.error, tokenResponse.error_description);
           if (typeof window.showNotif === 'function') {
-            window.showNotif('Error de Google', 'No se pudo completar el inicio de sesión.');
+            window.showNotif('Error de Google', `No se pudo completar el inicio de sesión: ${tokenResponse.error}`);
           }
           return;
         }
@@ -88,6 +94,8 @@ async function initTokenClient() {
           localStorage.setItem('asistencia_google_token_expires_at', tokenExpiresAt.toString());
           localStorage.setItem('asistencia_google_connected', 'true');
 
+          console.log('[GoogleAuth] Access token stored. Fetching user profile...');
+
           // Obtener perfil del usuario
           await fetchAndSaveUserProfile(currentAccessToken);
 
@@ -100,8 +108,12 @@ async function initTokenClient() {
             window.showNotif('Google Conectado', 'Sesión iniciada correctamente. Sincronización activa.');
           }
 
+          console.log('[GoogleAuth] Profile loaded. Starting background Drive sync...');
           // Sincronizar automáticamente respaldo a Google Drive
           await syncWithGoogleDrive(false);
+          console.log('[GoogleAuth] Drive sync complete.');
+        } else {
+          console.warn('[GoogleAuth] Callback fired but no access_token in response:', tokenResponse);
         }
       }
     });
@@ -164,32 +176,26 @@ async function fetchAndSaveUserProfile(accessToken) {
  */
 export async function connectGoogleAccount() {
   if (!GOOGLE_CLIENT_ID) {
-    const userInputId = prompt('Por favor, ingresa tu ID de Cliente de Google OAuth (Google Client ID):', GOOGLE_CLIENT_ID || '');
-    if (userInputId) {
-      setGoogleClientId(userInputId);
-    } else {
-      if (typeof window.showNotif === 'function') {
-        window.showNotif('Configuración Requerida', 'Ingresa tu Client ID de Google para continuar.');
-      }
-      return;
+    // Developer error — VITE_GOOGLE_CLIENT_ID not set in .env or Vercel env vars
+    console.error(
+      '[GoogleAuth] VITE_GOOGLE_CLIENT_ID is not defined.\n' +
+      'Add it to your .env file (local) and to Vercel Environment Variables (production).\n' +
+      'It should look like: VITE_GOOGLE_CLIENT_ID=123456789-xxxx.apps.googleusercontent.com'
+    );
+    if (typeof window.showNotif === 'function') {
+      window.showNotif('Configuración incompleta', 'El login de Google no está configurado. Contacta al administrador.');
     }
+    return;
   }
 
   try {
     await initTokenClient();
     if (tokenClient) {
-      // Forzar prompt para permitir seleccionar cuenta
       tokenClient.requestAccessToken({ prompt: 'select_account' });
     }
   } catch (err) {
     console.error('[GoogleAuth] Error al iniciar sesión:', err);
-    if (err.message === 'CLIENT_ID_MISSING') {
-      const userInputId = prompt('Ingresa tu Google Client ID para AsistenciaApp:');
-      if (userInputId) {
-        setGoogleClientId(userInputId);
-        connectGoogleAccount();
-      }
-    } else if (typeof window.showNotif === 'function') {
+    if (typeof window.showNotif === 'function') {
       window.showNotif('Error', 'No se pudo abrir el inicio de sesión de Google.');
     }
   }
