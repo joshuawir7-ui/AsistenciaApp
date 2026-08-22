@@ -24,7 +24,16 @@ let tokenClient = null;
 let currentAccessToken = localStorage.getItem('asistencia_google_access_token') || null;
 let tokenExpiresAt = parseInt(localStorage.getItem('asistencia_google_token_expires_at') || '0', 10);
 
-console.log('[GoogleAuth] Module loaded. Client ID available:', !!GOOGLE_CLIENT_ID);
+// ── Diagnostic: log module load status so any silent failure is immediately visible ──
+// These logs appear in DevTools → Console on every page load.
+console.log('[GoogleAuth] Module loaded.');
+console.log('[GoogleAuth] VITE env Client ID:', import.meta.env.VITE_GOOGLE_CLIENT_ID ? '✓ SET' : '✗ UNDEFINED (check Vercel env vars)');
+console.log('[GoogleAuth] localStorage Client ID:', localStorage.getItem('asistencia_google_client_id') ? '✓ SET' : '✗ not set');
+console.log('[GoogleAuth] Final Client ID in use:', GOOGLE_CLIENT_ID ? `✓ SET (${GOOGLE_CLIENT_ID.slice(0,15)}...)` : '✗ EMPTY — login will fail');
+
+// Expose to window so other modules can read the status for cross-module debugging
+window.__GOOGLE_CLIENT_ID_DEBUG__ = GOOGLE_CLIENT_ID ? 'SET' : 'UNDEFINED';
+
 
 // ─── SDK Loader ───────────────────────────────────────────────────────────────
 /**

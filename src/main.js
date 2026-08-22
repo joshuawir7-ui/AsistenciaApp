@@ -5374,6 +5374,14 @@ window.handleMobileNav = function (action, e) {
 
 // Google Account Sync Manager — calls real OAuth, not a mock
 window.toggleGoogleAccount = function () {
+  // ── Diagnostic logging (visible in DevTools → Console) ──
+  console.log('[LOGIN] toggleGoogleAccount fired. isConnected =',
+    localStorage.getItem('asistencia_google_connected'));
+  console.log('[LOGIN] VITE_GOOGLE_CLIENT_ID in build:',
+    (typeof import_meta_env_VITE_GOOGLE_CLIENT_ID !== 'undefined'
+      ? import_meta_env_VITE_GOOGLE_CLIENT_ID
+      : window.__GOOGLE_CLIENT_ID_DEBUG__ || 'check googleAuthDrive.js log above'));
+
   const isConnected = localStorage.getItem('asistencia_google_connected') === 'true';
   if (isConnected) {
     disconnectGoogleAccount();
@@ -5384,16 +5392,14 @@ window.toggleGoogleAccount = function () {
 
 function updateGoogleUI() {
   const isConnected = localStorage.getItem('asistencia_google_connected') === 'true';
-  const email = localStorage.getItem('asistencia_google_email') || 'profesor@gmail.com';
-  const name = localStorage.getItem('asistencia_google_name') || localStorage.getItem('asistencia_teacher_name') || 'Profesor';
+  const email   = localStorage.getItem('asistencia_google_email')   || '';
+  const name    = localStorage.getItem('asistencia_google_name')    || localStorage.getItem('asistencia_teacher_name') || 'Profesor';
   const picture = localStorage.getItem('asistencia_google_picture') || localStorage.getItem('asistencia_teacher_photo') || '';
+  const lastSync = localStorage.getItem('asistencia_last_cloud_sync');
 
+  // ── Toggle which panel is visible ───────────────────────────────────────
   const disconnectedView = document.getElementById('google-disconnected-view');
-  const connectedView = document.getElementById('google-connected-view');
-  const nameLabel = document.getElementById('google-profile-display-name');
-  const emailLabel = document.getElementById('google-profile-display-email');
-  const avatarBox = document.getElementById('google-profile-avatar-box');
-  const lastSyncLabel = document.getElementById('google-last-sync-time');
+  const connectedView    = document.getElementById('google-connected-view');
 
   if (disconnectedView && connectedView) {
     if (isConnected) {
@@ -5405,39 +5411,83 @@ function updateGoogleUI() {
     }
   }
 
-  if (nameLabel) nameLabel.textContent = name;
-  if (emailLabel) emailLabel.textContent = email;
+  // ── Re-render the connected panel with real data ─────────────────────────
+  if (isConnected && connectedView) {
+    // Avatar
+    const avatarHTML = picture
+      ? `<img src="${picture}" referrerpolicy="no-referrer"
+           style="width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;flex-shrink:0;"
+           alt="${name}" />`
+      : `<div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4285F4,#34A853);
+           color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;
+           flex-shrink:0;">${(name.charAt(0)||'P').toUpperCase()}</div>`;
 
-  if (avatarBox) {
-    if (picture && picture.trim() !== '') {
-      avatarBox.innerHTML = `<img src="${picture}" alt="${name}" style="width:48px; height:48px; border-radius:50%; object-fit:cover; display:block;" referrerpolicy="no-referrer" />`;
-    } else {
-      const initial = (name.charAt(0) || 'P').toUpperCase();
-      avatarBox.innerHTML = `<div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg, #4285F4, #34A853); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.3rem;">${initial}</div>`;
-    }
+    const syncTime = lastSync ? `Último respaldo: hoy a las ${lastSync}` : 'Último respaldo: Pendiente';
+
+    connectedView.innerHTML = `
+      <!-- Profile row: avatar + name/email + logout -->
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${avatarHTML}
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:0.95rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
+          <div style="font-size:0.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${email}</div>
+        </div>
+        <button onclick="window.toggleGoogleAccount()"
+          title="Cerrar sesión de Google"
+          style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;
+                 color:var(--muted);font-size:1.1rem;display:flex;align-items:center;transition:color 0.2s;"
+          onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Sync action buttons -->
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        <button id="btn-sync-drive" onclick="window.handleSyncToDrive()"
+          style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;
+                 padding:9px 14px;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;
+                 background:var(--accent-blue);color:white;border:none;transition:opacity 0.2s;"
+          onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          <span id="btn-sync-text">Sincronizar ahora</span>
+        </button>
+        <button id="btn-restore-drive" onclick="window.handleRestoreFromDrive()"
+          style="flex:1;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;
+                 padding:9px 14px;border-radius:10px;font-size:0.85rem;font-weight:600;cursor:pointer;
+                 background:var(--surface);color:var(--text);border:1px solid var(--border);transition:background 0.2s;"
+          onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='var(--surface)'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+          </svg>
+          <span id="btn-restore-text">Restaurar nube</span>
+        </button>
+      </div>
+
+      <!-- Last sync timestamp -->
+      <div id="google-last-sync-time"
+        style="font-size:0.75rem;color:var(--muted);margin-top:8px;text-align:center;">
+        ${syncTime}
+      </div>
+    `;
   }
 
-  if (lastSyncLabel) {
-    const lastSync = localStorage.getItem('asistencia_last_cloud_sync');
-    lastSyncLabel.textContent = lastSync ? `Último respaldo: Hoy a las ${lastSync}` : 'Último respaldo: Pendiente';
-  }
-
-  // Support legacy selectors if any exist
-  const btnTexts = document.querySelectorAll('.google-btn-text');
+  // ── Legacy selectors (other parts of the app that may reference Google state) ─
   const btns = document.querySelectorAll('.btn-google-connect');
   const subtitles = document.querySelectorAll('.google-sync-subtitle');
-
-  btns.forEach(btn => {
-    if (isConnected) btn.classList.add('connected');
-    else btn.classList.remove('connected');
-  });
-
-  btnTexts.forEach(txt => {
-    txt.textContent = isConnected ? '✓ Conectado' : 'Conectar Google';
-  });
-
+  btns.forEach(btn => isConnected ? btn.classList.add('connected') : btn.classList.remove('connected'));
   subtitles.forEach(sub => {
-    sub.textContent = isConnected ? `Vinculado con ${email}` : 'Sincroniza tus datos y notas en Google Drive';
+    sub.textContent = isConnected
+      ? `Vinculado con ${email}`
+      : 'Sincroniza tus datos y notas en Google Drive';
   });
 }
 window.updateGoogleUI = updateGoogleUI;
