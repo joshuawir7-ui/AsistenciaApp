@@ -124,7 +124,9 @@ async function initTokenClient() {
     tokenClient = window.google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
       scope: GOOGLE_SCOPES,
-      callback: handleTokenResponse
+      callback: handleTokenResponse,
+      ux_mode: 'redirect',
+      redirect_uri: window.location.origin
     });
     console.log('[GoogleAuth] Token client initialized with Client ID:', GOOGLE_CLIENT_ID.slice(0, 12) + '...');
   } else {
@@ -171,18 +173,42 @@ async function handleTokenResponse(tokenResponse) {
   console.log('[GoogleAuth] Token stored. Fetching Google profile...');
 
   // ── Fetch profile ────────────────────────────────────────────────────────
-  await fetchAndSaveUserProfile(currentAccessToken);
+  try {
+    // Fetch Google profile using the token
+    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+    });
 
-  // ── Update UI immediately ────────────────────────────────────────────────
-  if (typeof window.updateGoogleUI === 'function') {
-    window.updateGoogleUI();
-  } else {
-    console.warn('[GoogleAuth] window.updateGoogleUI is not defined yet.');
-  }
-
-  if (typeof window.showNotif === 'function') {
-    const name = localStorage.getItem('asistencia_google_name') || 'Cuenta';
-    window.showNotif('Sesión iniciada', `Bienvenido, ${name}. Sincronizando en la nube...`);
+    if (userInfoResponse.ok) {
+      const profile = await userInfoResponse.json();
+      console.log('[GoogleAuth] Profile received:', JSON.stringify({
+        name: profile.name,
+        email: profile.email,
+        hasPicture: !!profile.picture
+      }));
+      
+      localStorage.setItem('asistencia_google_name', profile.name || '');
+      localStorage.setItem('asistencia_google_email', profile.email || '');
+      localStorage.setItem('asistencia_google_picture', profile.picture || '');
+      
+      // Also update the main teacher profile with Google data
+      if (profile.name) localStorage.setItem('asistencia_teacher_name', profile.name);
+      if (profile.picture) localStorage.setItem('asistencia_teacher_photo', profile.picture);
+    }
+    
+    // Show success notification
+    if (typeof window.showNotif === 'function') {
+      window.showNotif('Conexión Exitosa', 'Tu cuenta de Google ha sido vinculada.');
+    }
+    
+    if (typeof window.updateGoogleUI === 'function') {
+      window.updateGoogleUI();
+    }
+  } catch (err) {
+    console.error('[GoogleAuth] Error handling token response:', err);
+    if (typeof window.showNotif === 'function') {
+      window.showNotif('Conexión Fallida', 'No se pudo vincular la cuenta de Google.');
+    }
   }
 
   // ── Auto-sync to Drive ───────────────────────────────────────────────────

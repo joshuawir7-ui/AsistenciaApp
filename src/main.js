@@ -5497,6 +5497,23 @@ function updateGoogleUI() {
       ? `Vinculado con ${email}`
       : 'Sincroniza tus datos y notas en Google Drive';
   });
+
+  // ── Sync main teacher profile UI ─────────────────────────────────────────
+  if (isConnected) {
+    const teacherNameInput = document.getElementById('teacher-name-input');
+    const teacherPhotoDisplay = document.getElementById('profile-avatar-display');
+    
+    if (teacherNameInput && name) {
+      teacherNameInput.value = name;
+    }
+    if (teacherPhotoDisplay) {
+      if (picture) {
+        teacherPhotoDisplay.innerHTML = `<img src="${picture}" style="width:100%;height:100%;object-fit:cover;" referrerpolicy="no-referrer" />`;
+      } else if (name) {
+        teacherPhotoDisplay.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--accent-blue);color:white;font-weight:bold;font-size:1.5rem;">${name.charAt(0).toUpperCase()}</div>`;
+      }
+    }
+  }
 }
 window.updateGoogleUI = updateGoogleUI;
 
