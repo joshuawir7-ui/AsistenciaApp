@@ -908,7 +908,7 @@ function openTimePicker(actionType, existingHour, idx = null) {
         manual.value = `${hVal < 10 ? '0' : ''}${hVal}:00`;
       }
     };
-    
+
     manual.oninput = () => {
       const parts = manual.value.trim().split(':');
       const hVal = parseInt(parts[0]);
@@ -3445,7 +3445,7 @@ window.openStudentProfileV6 = function (studentName) {
     const lDeg = totalStats > 0 ? ((stats.l || 0) / totalStats) * 360 : 0;
     const aDeg = totalStats > 0 ? ((stats.a || 0) / totalStats) * 360 : 0;
     const gradient = totalStats > 0
-      ? `conic-gradient(#4CAF50 0deg ${pDeg}deg, #FFD60A ${pDeg}deg ${pDeg+lDeg}deg, #E63946 ${pDeg+lDeg}deg 360deg)`
+      ? `conic-gradient(#4CAF50 0deg ${pDeg}deg, #FFD60A ${pDeg}deg ${pDeg + lDeg}deg, #E63946 ${pDeg + lDeg}deg 360deg)`
       : `conic-gradient(#E5E7EB 0deg 360deg)`;
 
     const mountPoint = document.getElementById('re-container-mount');
@@ -3460,11 +3460,11 @@ window.openStudentProfileV6 = function (studentName) {
       } else {
         allergiesHTML = `<li>Sin alergias registradas</li>`;
       }
-      
+
       // 2. Sangre dinámica
       const rawBlood = student.sangre || student.bloodType || student.tipoSangre || '';
-      const bloodTypeHTML = (rawBlood && rawBlood !== 'Sin definir' && rawBlood.trim() !== '') 
-        ? `<li class="resumen-sangre">Sangre tipo ${rawBlood}</li>` 
+      const bloodTypeHTML = (rawBlood && rawBlood !== 'Sin definir' && rawBlood.trim() !== '')
+        ? `<li class="resumen-sangre">Sangre tipo ${rawBlood}</li>`
         : `<li class="resumen-sangre" style="color: var(--muted, #64748b); font-weight: 600;">Sangre: Sin definir</li>`;
 
       const rawPhone = student.contact || student.telefono || '';
@@ -5365,7 +5365,7 @@ window.handleMobileNav = function (action, e) {
 };
 
 // Google Account Sync Manager
-window.toggleGoogleAccount = function() {
+window.toggleGoogleAccount = function () {
   const isConnected = localStorage.getItem('asistencia_google_connected') === 'true';
   if (isConnected) {
     localStorage.setItem('asistencia_google_connected', 'false');
@@ -5402,7 +5402,7 @@ function updateGoogleUI() {
 window.updateGoogleUI = updateGoogleUI;
 
 // Interactive Schedule Time Picker Helpers
-window.setScheduleAmPm = function(ampm) {
+window.setScheduleAmPm = function (ampm) {
   const amBtn = document.getElementById('btn-ampm-am');
   const pmBtn = document.getElementById('btn-ampm-pm');
   const hiddenAmPm = document.getElementById('schedule-ampm-val');
@@ -5420,7 +5420,7 @@ window.setScheduleAmPm = function(ampm) {
   window.updateScheduleTimeValue();
 };
 
-window.updateScheduleTimeValue = function() {
+window.updateScheduleTimeValue = function () {
   const hEl = document.getElementById('schedule-time-hour');
   const mEl = document.getElementById('schedule-time-minute-input');
   const ampmEl = document.getElementById('schedule-ampm-val');
@@ -5621,13 +5621,13 @@ window.saveConfigPerfiles = function () {
   let studentObj = null;
   for (let i = 0; i < groups.length; i++) {
     const found = groups[i].students.find(s => s.name.trim() === studentProfile.nombre);
-    if (found) { 
-      studentObj = found; 
+    if (found) {
+      studentObj = found;
       found.sangre = studentProfile.tipoSangre;
       found.bloodType = studentProfile.tipoSangre;
       found.tipoSangre = studentProfile.tipoSangre;
       found.alergias = studentProfile.alergias;
-      break; 
+      break;
     }
   }
   if (!studentObj) {
@@ -7652,7 +7652,7 @@ function applyAutoFaltaForYesterday() {
   yesterday.setDate(yesterday.getDate() - 1);
 
   const monthKey = translations[lang].months[yesterday.getMonth()].substring(0, 3);
-  const dayIdx   = yesterday.getDate() - 1; // 0-indexed within the 35-slot array
+  const dayIdx = yesterday.getDate() - 1; // 0-indexed within the 35-slot array
 
   // Guard: don't apply the same day twice
   const guardKey = `asistencia_auto_falta_applied_${monthKey}_${dayIdx}`;
