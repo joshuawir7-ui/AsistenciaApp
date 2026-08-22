@@ -1219,6 +1219,7 @@ function syncSettingsUI() {
   // Update Security Section UI
   updateSecuritySettingsUI();
 }
+window.syncSettingsUI = syncSettingsUI;
 
 // ── SETTINGS & NAVIGATION MODULE ──
 // This module handles global UI overlays and settings, isolated from specific dashboard modules.

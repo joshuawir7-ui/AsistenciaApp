@@ -128,7 +128,7 @@ async function fetchAndSaveUserProfile(accessToken) {
     localStorage.setItem('asistencia_google_name', name);
     localStorage.setItem('asistencia_google_picture', picture);
 
-    // Actualizar nombre del profesor en la app
+    // Reemplazar perfil completo del docente con los datos de Google
     if (name) {
       localStorage.setItem('asistencia_teacher_name', name);
       window.teacherName = name;
@@ -140,10 +140,19 @@ async function fetchAndSaveUserProfile(accessToken) {
 
     if (picture) {
       localStorage.setItem('asistencia_teacher_photo', picture);
+      window.teacherPhoto = picture;
       const avatarDisplay = document.getElementById('profile-avatar-display');
       if (avatarDisplay) {
         avatarDisplay.innerHTML = `<img src="${picture}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />`;
       }
+    }
+
+    if (typeof window.syncSettingsUI === 'function') {
+      window.syncSettingsUI();
+    }
+
+    if (typeof window.initGreeting === 'function') {
+      window.initGreeting();
     }
   } catch (err) {
     console.error('[GoogleAuth] Error obteniendo perfil:', err);
