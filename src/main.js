@@ -5379,16 +5379,52 @@ window.toggleGoogleAccount = function () {
 
 function updateGoogleUI() {
   const isConnected = localStorage.getItem('asistencia_google_connected') === 'true';
+  const email = localStorage.getItem('asistencia_google_email') || 'profesor@gmail.com';
+  const name = localStorage.getItem('asistencia_google_name') || localStorage.getItem('asistencia_teacher_name') || 'Profesor';
+  const picture = localStorage.getItem('asistencia_google_picture') || localStorage.getItem('asistencia_teacher_photo') || '';
+
+  const disconnectedView = document.getElementById('google-disconnected-view');
+  const connectedView = document.getElementById('google-connected-view');
+  const nameLabel = document.getElementById('google-profile-display-name');
+  const emailLabel = document.getElementById('google-profile-display-email');
+  const avatarBox = document.getElementById('google-profile-avatar-box');
+  const lastSyncLabel = document.getElementById('google-last-sync-time');
+
+  if (disconnectedView && connectedView) {
+    if (isConnected) {
+      disconnectedView.style.display = 'none';
+      connectedView.style.display = 'flex';
+    } else {
+      disconnectedView.style.display = 'flex';
+      connectedView.style.display = 'none';
+    }
+  }
+
+  if (nameLabel) nameLabel.textContent = name;
+  if (emailLabel) emailLabel.textContent = email;
+
+  if (avatarBox) {
+    if (picture && picture.trim() !== '') {
+      avatarBox.innerHTML = `<img src="${picture}" class="google-profile-avatar" alt="${name}" />`;
+    } else {
+      const initial = name.charAt(0).toUpperCase() || 'P';
+      avatarBox.innerHTML = `<div style="width:100%; height:100%; border-radius:50%; background:linear-gradient(135deg, #4285F4, #34A853); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.3rem;">${initial}</div>`;
+    }
+  }
+
+  if (lastSyncLabel) {
+    const lastSync = localStorage.getItem('asistencia_last_cloud_sync');
+    lastSyncLabel.textContent = lastSync ? `Último respaldo: Hoy a las ${lastSync}` : 'Último respaldo: Pendiente';
+  }
+
+  // Support legacy selectors if any exist
   const btnTexts = document.querySelectorAll('.google-btn-text');
   const btns = document.querySelectorAll('.btn-google-connect');
   const subtitles = document.querySelectorAll('.google-sync-subtitle');
 
   btns.forEach(btn => {
-    if (isConnected) {
-      btn.classList.add('connected');
-    } else {
-      btn.classList.remove('connected');
-    }
+    if (isConnected) btn.classList.add('connected');
+    else btn.classList.remove('connected');
   });
 
   btnTexts.forEach(txt => {
@@ -5396,7 +5432,7 @@ function updateGoogleUI() {
   });
 
   subtitles.forEach(sub => {
-    sub.textContent = isConnected ? 'Vinculado con profesor@gmail.com' : 'Sincroniza tus datos y notas en Google Drive';
+    sub.textContent = isConnected ? `Vinculado con ${email}` : 'Sincroniza tus datos y notas en Google Drive';
   });
 }
 window.updateGoogleUI = updateGoogleUI;
