@@ -544,3 +544,85 @@ window.syncWithGoogleDrive = syncWithGoogleDrive;
 window.restoreFromGoogleDrive = restoreFromGoogleDrive;
 window.setGoogleClientId = setGoogleClientId;
 window.getGoogleClientId = getGoogleClientId;
+
+// ─── OAuth Redirect Return Handler ────────────────────────────────────────────
+/**
+ * When the browser blocks the popup, Google Identity Services falls back to a
+ * full-page redirect. Google returns to the app with the access token in the
+ * URL hash fragment: #access_token=TOKEN&expires_in=3600&...
+ *
+ * This function MUST be called on every page load (before any other logic)
+ * so the token is captured immediately when the page reloads from the redirect.
+ *
+ * It also logs all URL parameters so any misconfiguration is immediately visible
+ * in DevTools → Console.
+ */
+export function checkOAuthRedirectReturn() {
+  const fullUrl = window.location.href;
+  const hash = window.location.hash;
+  const search = window.location.search;
+
+  // Always log the return URL for diagnostics — this is what the user requested
+  console.log('[OAUTH RETURN] Page loaded. Full URL:', fullUrl);
+  console.log('[OAUTH RETURN] Hash fragment:', hash || '(empty)');
+  console.log('[OAUTH RETURN] Query string:', search || '(empty)');
+
+  // ── Case 1: Implicit flow — token is in the hash fragment (#access_token=...) ──
+  if (hash && hash.includes('access_token')) {
+    const params = new URLSearchParams(hash.startsWith('#') ? hash.substring(1) : hash);
+    const accessToken = params.get('access_token');
+    const expiresIn = params.get('expires_in') || '3600';
+    const error = params.get('error');
+
+    // Clean the token from the URL immediately so it's not visible or reprocessed on refresh
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+
+    if (error) {
+      console.error('[OAUTH RETURN] Google returned an error:', error, params.get('error_description'));
+      if (typeof window.showNotif === 'function') {
+        window.showNotif('Error de Google', params.get('error_description') || error);
+      }
+      return;
+    }
+
+    if (accessToken) {
+      console.log('[OAUTH RETURN] ✓ access_token found in URL hash. Processing OAuth redirect return...');
+      // Feed the token into the same handler used by the popup callback
+      handleTokenResponse({ access_token: accessToken, expires_in: expiresIn });
+      return;
+    }
+  }
+
+  // ── Case 2: Authorization code flow — code is in the query string (?code=...) ──
+  // This flow requires a backend to exchange the code for a token (needs client_secret).
+  // AsistenciaApp has no backend, so we detect this and log a clear error.
+  if (search && search.includes('code=')) {
+    const params = new URLSearchParams(search);
+    const code = params.get('code');
+    const error = params.get('error');
+
+    window.history.replaceState(null, '', window.location.pathname);
+
+    if (error) {
+      console.error('[OAUTH RETURN] Auth code flow returned error:', error);
+      return;
+    }
+
+    if (code) {
+      console.error(
+        '[OAUTH RETURN] Authorization code detected but this app has no backend to exchange it.\n' +
+        'Switch to implicit flow (response_type=token) or Google Identity Services with ux_mode=popup.\n' +
+        'Code (for debugging):', code.slice(0, 20) + '...'
+      );
+      if (typeof window.showNotif === 'function') {
+        window.showNotif('Configuración incorrecta', 'El flujo OAuth necesita ajustarse. Contacta al desarrollador.');
+      }
+    }
+    return;
+  }
+
+  // ── No OAuth parameters found — normal page load ──────────────────────────────
+  console.log('[OAUTH RETURN] No OAuth parameters found in URL — normal page load.');
+}
+
+window.getGoogleClientId = getGoogleClientId;

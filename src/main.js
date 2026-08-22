@@ -6,8 +6,16 @@ import {
   disconnectGoogleAccount,
   syncWithGoogleDrive as driveSync,
   restoreFromGoogleDrive as driveRestore,
-  loadGoogleScript
+  loadGoogleScript,
+  checkOAuthRedirectReturn
 } from './googleAuthDrive.js';
+
+// ── MUST run first on every page load ────────────────────────────────────────
+// When the browser blocks the Google popup, GIS redirects the full page to
+// accounts.google.com and back with #access_token= in the URL hash.
+// checkOAuthRedirectReturn() reads that hash and processes the token.
+// If this isn't called immediately on load, the token is lost forever.
+checkOAuthRedirectReturn();
 
 function getTeacherAvatarHTML(photoUrl, size = '100%') {
   if (photoUrl && photoUrl.trim() !== '') {
@@ -7859,10 +7867,13 @@ window.handleRestoreFromDrive = async function () {
   }
 };
 
-// Pre-load the Google Identity Services SDK silently so the popup opens instantly
+// ── GOOGLE AUTH & DRIVE — Runtime initialization ─────────────────────────────────
+// Re-expose imported functions to window for inline onclick= handlers in HTML
+window.syncWithGoogleDrive = driveSync;
+window.restoreFromGoogleDrive = driveRestore;
+
+// Pre-load the Google Identity Services SDK so the popup opens instantly on click
 loadGoogleScript().catch(err => console.warn('[GoogleAuth] SDK preload failed:', err));
 
 // Sync the Google profile card with any persisted auth state from a previous session
 updateGoogleUI();
-
-
