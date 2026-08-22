@@ -116,7 +116,10 @@ async function initTokenClient() {
     throw new Error('CLIENT_ID_MISSING');
   }
 
-  // Re-create the token client so the callback always has the latest scope/Client ID
+  // Only initialize once to prevent race conditions if user double-clicks the login button.
+  // Re-initializing while a popup is open can orphan the previous popup's callback listener.
+  if (tokenClient) return;
+
   if (window.google?.accounts?.oauth2) {
     tokenClient = window.google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
