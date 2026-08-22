@@ -1,6 +1,13 @@
 import './style.css';
 import { AlumnosModule } from './alumnosModule.js';
 import { LocalNotifications } from '@capacitor/local-notifications';
+import {
+  connectGoogleAccount,
+  disconnectGoogleAccount,
+  syncWithGoogleDrive as driveSync,
+  restoreFromGoogleDrive as driveRestore,
+  loadGoogleScript
+} from './googleAuthDrive.js';
 
 function getTeacherAvatarHTML(photoUrl, size = '100%') {
   if (photoUrl && photoUrl.trim() !== '') {
@@ -5365,17 +5372,14 @@ window.handleMobileNav = function (action, e) {
   }
 };
 
-// Google Account Sync Manager
+// Google Account Sync Manager — calls real OAuth, not a mock
 window.toggleGoogleAccount = function () {
   const isConnected = localStorage.getItem('asistencia_google_connected') === 'true';
   if (isConnected) {
-    localStorage.setItem('asistencia_google_connected', 'false');
-    showNotif('Google Desconectado', 'Se ha desvinculado la cuenta de Google.');
+    disconnectGoogleAccount();
   } else {
-    localStorage.setItem('asistencia_google_connected', 'true');
-    showNotif('Google Conectado', 'Cuenta vinculada exitosamente. Sincronización activa.');
+    connectGoogleAccount();
   }
-  updateGoogleUI();
 };
 
 function updateGoogleUI() {
@@ -5406,10 +5410,10 @@ function updateGoogleUI() {
 
   if (avatarBox) {
     if (picture && picture.trim() !== '') {
-      avatarBox.innerHTML = `<img src="${picture}" class="google-profile-avatar" alt="${name}" />`;
+      avatarBox.innerHTML = `<img src="${picture}" alt="${name}" style="width:48px; height:48px; border-radius:50%; object-fit:cover; display:block;" referrerpolicy="no-referrer" />`;
     } else {
-      const initial = name.charAt(0).toUpperCase() || 'P';
-      avatarBox.innerHTML = `<div style="width:100%; height:100%; border-radius:50%; background:linear-gradient(135deg, #4285F4, #34A853); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.3rem;">${initial}</div>`;
+      const initial = (name.charAt(0) || 'P').toUpperCase();
+      avatarBox.innerHTML = `<div style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg, #4285F4, #34A853); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.3rem;">${initial}</div>`;
     }
   }
 
@@ -7737,3 +7741,15 @@ function applyAutoFaltaForYesterday() {
     }
   }, 60000); // check every 60 seconds
 })();
+
+// ── GOOGLE AUTH & DRIVE — Real initialization ──
+// Expose real Drive functions to onclick handlers in HTML
+window.syncWithGoogleDrive = driveSync;
+window.restoreFromGoogleDrive = driveRestore;
+
+// Pre-load the Google Identity Services SDK silently so the popup opens instantly
+loadGoogleScript().catch(err => console.warn('[GoogleAuth] SDK preload failed:', err));
+
+// Sync the UI with any persisted auth state from a previous session
+updateGoogleUI();
+
