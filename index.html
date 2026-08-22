@@ -1339,14 +1339,14 @@
                   </div>
                 </div>
 
-                <div class="google-profile-actions">
-                  <button type="button" class="btn-primary" onclick="window.syncWithGoogleDrive(true)" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; display: flex; align-items: center; gap: 6px;">
+              <div class="google-profile-actions">
+                  <button type="button" id="btn-sync-drive" class="btn-primary" onclick="window.handleSyncToDrive()" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; display: flex; align-items: center; gap: 6px;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Sincronizar Ahora
+                    <span id="btn-sync-text">Sincronizar Ahora</span>
                   </button>
-                  <button type="button" class="btn-secondary" onclick="window.restoreFromGoogleDrive()" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Restaurar Nube
+                  <button type="button" id="btn-restore-drive" class="btn-secondary" onclick="window.handleRestoreFromDrive()" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span id="btn-restore-text">Restaurar Nube</span>
                   </button>
                   <div style="flex: 1;"></div>
                   <button type="button" onclick="window.toggleGoogleAccount()" style="background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.15); padding: 9px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
@@ -1354,6 +1354,7 @@
                     Desconectar
                   </button>
                 </div>
+
               </div>
 
             </div>

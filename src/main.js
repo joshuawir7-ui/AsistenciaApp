@@ -7742,14 +7742,77 @@ function applyAutoFaltaForYesterday() {
   }, 60000); // check every 60 seconds
 })();
 
-// ── GOOGLE AUTH & DRIVE — Real initialization ──
-// Expose real Drive functions to onclick handlers in HTML
+// ── GOOGLE AUTH & DRIVE — Real initialization ──────────────────────────────────
+
+// The Drive functions are imported at the top of this file as driveSync / driveRestore.
+// Re-expose them to window so any remaining inline onclick= attributes can find them.
 window.syncWithGoogleDrive = driveSync;
 window.restoreFromGoogleDrive = driveRestore;
+
+/**
+ * "Sincronizar Ahora" button handler — shows real loading/success/error states.
+ * Called by onclick on #btn-sync-drive in index.html
+ */
+window.handleSyncToDrive = async function () {
+  const btn  = document.getElementById('btn-sync-drive');
+  const txt  = document.getElementById('btn-sync-text');
+  if (!btn) { await driveSync(true); return; }
+
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  if (txt) txt.textContent = 'Subiendo...';
+
+  try {
+    const ok = await driveSync(true);
+    if (ok) {
+      if (txt) txt.textContent = '✓ Guardado';
+    } else {
+      if (txt) txt.textContent = '✗ Error';
+    }
+  } catch (e) {
+    if (txt) txt.textContent = '✗ Error';
+  } finally {
+    setTimeout(() => {
+      btn.innerHTML = originalHTML;
+      btn.disabled = false;
+      updateGoogleUI();
+    }, 2500);
+  }
+};
+
+/**
+ * "Restaurar desde la Nube" button handler — confirms first, then shows real loading state.
+ * Called by onclick on #btn-restore-drive in index.html
+ */
+window.handleRestoreFromDrive = async function () {
+  const confirmed = window.confirm(
+    '⚠️ Restaurar desde Google Drive reemplazará TODOS tus datos locales (grupos, alumnos, horarios y tareas) con el respaldo guardado en la nube.\n\n¿Deseas continuar?'
+  );
+  if (!confirmed) return;
+
+  const btn = document.getElementById('btn-restore-drive');
+  const txt = document.getElementById('btn-restore-text');
+  if (!btn) { await driveRestore(); return; }
+
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  if (txt) txt.textContent = 'Restaurando...';
+
+  try {
+    await driveRestore();
+    // driveRestore() reloads the page on success, so we only reach here on failure
+    if (txt) txt.textContent = '✗ Error';
+    setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 2500);
+  } catch (e) {
+    if (txt) txt.textContent = '✗ Error';
+    setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 2500);
+  }
+};
 
 // Pre-load the Google Identity Services SDK silently so the popup opens instantly
 loadGoogleScript().catch(err => console.warn('[GoogleAuth] SDK preload failed:', err));
 
-// Sync the UI with any persisted auth state from a previous session
+// Sync the Google profile card with any persisted auth state from a previous session
 updateGoogleUI();
+
 
