@@ -991,6 +991,97 @@
             </div>
           </div>
 
+          <!-- GROUP: CUENTA DE GOOGLE -->
+          <div class="settings-card-group">
+            <div class="settings-card-header">
+              <div class="settings-card-header-icon" style="background: rgba(234, 67, 53, 0.12); color: #ea4335;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4" />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853" />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    fill="#FBBC05" />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    fill="#EA4335" />
+                </svg>
+              </div>
+              <h3 class="settings-card-header-title">Cuenta de Google y Nube</h3>
+            </div>
+
+            <div class="settings-list-rows" style="padding: 16px;">
+              
+              <!-- DISCONNECTED STATE: Official Google Sign-In Button -->
+              <div id="google-disconnected-view" class="settings-list-row" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                <div class="settings-item-left">
+                  <div class="settings-item-badge-icon" style="background: rgba(66, 133, 244, 0.1); color: #4285f4;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+                    </svg>
+                  </div>
+                  <div class="settings-item-labels">
+                    <span class="settings-item-title">Sincronización en Google Drive</span>
+                    <span class="settings-item-desc">Respalda tus grupos, clases, alumnos y horarios en la nube</span>
+                  </div>
+                </div>
+
+                <div class="settings-item-right">
+                  <button type="button" class="google-login-btn-official" id="btn-google-signin" onclick="window.toggleGoogleAccount()" style="display: flex; align-items: center; justify-content: center; gap: 12px; background-color: #ffffff; color: #3c4043; border: 1px solid #dadce0; border-radius: 4px; padding: 0 16px; height: 42px; font-family: 'Google Sans', Roboto, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);" onmouseover="this.style.backgroundColor='#f8f9fa'; this.style.boxShadow='0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.boxShadow='0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)';">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
+                    </svg>
+                    <span style="font-family: 'Google Sans', Roboto, arial, sans-serif;">Iniciar sesión con Google</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- CONNECTED STATE: Rich Profile Card -->
+              <div id="google-connected-view" class="google-profile-card" style="display: none;">
+                <div class="google-profile-header">
+                  <div class="google-profile-avatar-wrapper" id="google-profile-avatar-box">
+                    <img src="" id="google-profile-avatar-img" class="google-profile-avatar" alt="Avatar" />
+                  </div>
+                  <div class="google-profile-details">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <span class="google-profile-name" id="google-profile-display-name">Profesor</span>
+                      <span class="google-cloud-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        Google Drive Activo
+                      </span>
+                    </div>
+                    <span class="google-profile-email" id="google-profile-display-email">profesor@gmail.com</span>
+                    <small style="color: var(--muted); font-size: 0.75rem; margin-top: 2px;" id="google-last-sync-time">Último respaldo: Pendiente</small>
+                  </div>
+                </div>
+
+              <div class="google-profile-actions">
+                  <button type="button" id="btn-sync-drive" class="btn-primary" onclick="window.handleSyncToDrive()" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; display: flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span id="btn-sync-text">Sincronizar Ahora</span>
+                  </button>
+                  <button type="button" id="btn-restore-drive" class="btn-secondary" onclick="window.handleRestoreFromDrive()" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span id="btn-restore-text">Restaurar Nube</span>
+                  </button>
+                  <div style="flex: 1;"></div>
+                  <button type="button" onclick="window.toggleGoogleAccount()" style="background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.15); padding: 9px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Desconectar
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
           <!-- GROUP 2: NOTIFICACIONES Y RECORDATORIOS -->
           <div class="settings-card-group">
             <div class="settings-card-header">
@@ -1268,96 +1359,6 @@
             </div>
           </div>
 
-          <!-- GROUP: CUENTA DE GOOGLE -->
-          <div class="settings-card-group">
-            <div class="settings-card-header">
-              <div class="settings-card-header-icon" style="background: rgba(234, 67, 53, 0.12); color: #ea4335;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4" />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853" />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                    fill="#FBBC05" />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                    fill="#EA4335" />
-                </svg>
-              </div>
-              <h3 class="settings-card-header-title">Cuenta de Google y Nube</h3>
-            </div>
-
-            <div class="settings-list-rows" style="padding: 16px;">
-              
-              <!-- DISCONNECTED STATE: Official Google Sign-In Button -->
-              <div id="google-disconnected-view" class="settings-list-row" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-                <div class="settings-item-left">
-                  <div class="settings-item-badge-icon" style="background: rgba(66, 133, 244, 0.1); color: #4285f4;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                      stroke-width="2.5">
-                      <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
-                    </svg>
-                  </div>
-                  <div class="settings-item-labels">
-                    <span class="settings-item-title">Sincronización en Google Drive</span>
-                    <span class="settings-item-desc">Respalda tus grupos, clases, alumnos y horarios en la nube</span>
-                  </div>
-                </div>
-
-                <div class="settings-item-right">
-                  <button type="button" class="google-login-btn-official" id="btn-google-signin" onclick="window.toggleGoogleAccount()">
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
-                    </svg>
-                    <span>Iniciar sesión con Google</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- CONNECTED STATE: Rich Profile Card -->
-              <div id="google-connected-view" class="google-profile-card" style="display: none;">
-                <div class="google-profile-header">
-                  <div class="google-profile-avatar-wrapper" id="google-profile-avatar-box">
-                    <img src="" id="google-profile-avatar-img" class="google-profile-avatar" alt="Avatar" />
-                  </div>
-                  <div class="google-profile-details">
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                      <span class="google-profile-name" id="google-profile-display-name">Profesor</span>
-                      <span class="google-cloud-badge">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                        Google Drive Activo
-                      </span>
-                    </div>
-                    <span class="google-profile-email" id="google-profile-display-email">profesor@gmail.com</span>
-                    <small style="color: var(--muted); font-size: 0.75rem; margin-top: 2px;" id="google-last-sync-time">Último respaldo: Pendiente</small>
-                  </div>
-                </div>
-
-              <div class="google-profile-actions">
-                  <button type="button" id="btn-sync-drive" class="btn-primary" onclick="window.handleSyncToDrive()" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; display: flex; align-items: center; gap: 6px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    <span id="btn-sync-text">Sincronizar Ahora</span>
-                  </button>
-                  <button type="button" id="btn-restore-drive" class="btn-secondary" onclick="window.handleRestoreFromDrive()" style="padding: 9px 18px; font-size: 0.85rem; border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    <span id="btn-restore-text">Restaurar Nube</span>
-                  </button>
-                  <div style="flex: 1;"></div>
-                  <button type="button" onclick="window.toggleGoogleAccount()" style="background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.15); padding: 9px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Desconectar
-                  </button>
-                </div>
-
-              </div>
-
-            </div>
           </div>
 
           <!-- GROUP 4: SEGURIDAD -->

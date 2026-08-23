@@ -13,12 +13,16 @@ const GOOGLE_SCOPES = [
 ].join(' ');
 
 // ─── State ────────────────────────────────────────────────────────────────────
-// VITE_ prefix is required for Vite to expose env vars to the browser bundle.
-// In production: set VITE_GOOGLE_CLIENT_ID in Vercel → Settings → Environment Variables
-// In development: set VITE_GOOGLE_CLIENT_ID in the .env file at the project root
-let GOOGLE_CLIENT_ID = (import.meta.env && import.meta.env.VITE_GOOGLE_CLIENT_ID)
+// The Client ID is hardcoded here as a guaranteed fallback.
+// The OAuth Client ID is NOT a secret — it travels visible in every browser request.
+// In production: VITE_GOOGLE_CLIENT_ID in Vercel env vars will override this.
+// In development: .env file VITE_GOOGLE_CLIENT_ID will override this.
+const HARDCODED_CLIENT_ID = '309899943436-4ibkcsbom2gr2ih73gr2oehgnuudm2ku.apps.googleusercontent.com';
+
+let GOOGLE_CLIENT_ID =
+  (import.meta.env && import.meta.env.VITE_GOOGLE_CLIENT_ID)
   || localStorage.getItem('asistencia_google_client_id')
-  || '';
+  || HARDCODED_CLIENT_ID;
 
 let tokenClient = null;
 let currentAccessToken = localStorage.getItem('asistencia_google_access_token') || null;
@@ -104,7 +108,7 @@ async function initTokenClient() {
 
   // Re-read Client ID in case it was updated after module load
   if (!GOOGLE_CLIENT_ID) {
-    GOOGLE_CLIENT_ID = localStorage.getItem('asistencia_google_client_id') || '';
+    GOOGLE_CLIENT_ID = localStorage.getItem('asistencia_google_client_id') || HARDCODED_CLIENT_ID;
   }
 
   if (!GOOGLE_CLIENT_ID) {
@@ -121,14 +125,16 @@ async function initTokenClient() {
   if (tokenClient) return;
 
   if (window.google?.accounts?.oauth2) {
+    // NOTE: Do NOT set ux_mode:'redirect' here.
+    // ux_mode:'redirect' sends the token via URL hash on return, which means the
+    // 'callback' function below is NEVER called — breaking profile fetch entirely.
+    // Popup mode (the default) delivers the token directly to 'callback'.
     tokenClient = window.google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
       scope: GOOGLE_SCOPES,
       callback: handleTokenResponse,
-      ux_mode: 'redirect',
-      redirect_uri: window.location.origin
     });
-    console.log('[GoogleAuth] Token client initialized with Client ID:', GOOGLE_CLIENT_ID.slice(0, 12) + '...');
+    console.log('[GoogleAuth] Token client initialized (popup mode) with Client ID:', GOOGLE_CLIENT_ID.slice(0, 12) + '...');
   } else {
     throw new Error('Google SDK not available after loading');
   }
@@ -290,7 +296,7 @@ async function fetchAndSaveUserProfile(accessToken) {
 export async function connectGoogleAccount() {
   // Re-read in case it was stored in localStorage from a previous session
   if (!GOOGLE_CLIENT_ID) {
-    GOOGLE_CLIENT_ID = localStorage.getItem('asistencia_google_client_id') || '';
+    GOOGLE_CLIENT_ID = localStorage.getItem('asistencia_google_client_id') || HARDCODED_CLIENT_ID;
   }
 
   if (!GOOGLE_CLIENT_ID) {
